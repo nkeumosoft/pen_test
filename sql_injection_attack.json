@@ -1,0 +1,139 @@
+{
+    "_additionals": {
+        "Fingerprint web technology": [],
+        "HTTP Methods": []
+    },
+    "_anomalies": {
+        "Internal Server Error": [],
+        "Resource consumption": []
+    },
+    "_vulns": {
+        "Backup file": [],
+        "Blind SQL Injection": [],
+        "CRLF Injection": [],
+        "Command execution": [],
+        "Content Security Policy Configuration": [
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=1\"",
+                "http_request": "GET /artists.php?artist=1 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "CSP is not set",
+                "level": 1,
+                "method": "GET",
+                "module": "csp",
+                "parameter": "",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "WSTG-CONF-12",
+                    "OSHP-Content-Security-Policy"
+                ]
+            }
+        ],
+        "Cross Site Request Forgery": [],
+        "Fingerprint web application framework": [],
+        "Fingerprint web server": [],
+        "HTTP Secure Headers": [
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=1\"",
+                "http_request": "GET /artists.php?artist=1 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "X-Frame-Options is not set",
+                "level": 1,
+                "method": "GET",
+                "module": "http_headers",
+                "parameter": "",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "OSHP-X-Frame-Options"
+                ]
+            },
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=1\"",
+                "http_request": "GET /artists.php?artist=1 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "X-Content-Type-Options is not set",
+                "level": 1,
+                "method": "GET",
+                "module": "http_headers",
+                "parameter": "",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "OSHP-X-Content-Type-Options"
+                ]
+            },
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=1\"",
+                "http_request": "GET /artists.php?artist=1 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "Strict-Transport-Security is not set",
+                "level": 1,
+                "method": "GET",
+                "module": "http_headers",
+                "parameter": "",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "WSTG-CONF-07",
+                    "OSHP-HTTP-Strict-Transport-Security"
+                ]
+            }
+        ],
+        "Htaccess Bypass": [],
+        "HttpOnly Flag cookie": [],
+        "Log4Shell": [],
+        "Open Redirect": [],
+        "Path Traversal": [],
+        "Potentially dangerous file": [],
+        "Reflected Cross Site Scripting": [],
+        "SQL Injection": [
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=1%C2%BF%27%22%28\"",
+                "http_request": "GET /artists.php?artist=1%C2%BF%27%22%28 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "SQL Injection (DMBS: MySQL via injection in the parameter artist",
+                "level": 4,
+                "method": "GET",
+                "module": "sql",
+                "parameter": "artist",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "WSTG-INPV-05"
+                ]
+            },
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=3%20AND%2070%3D70%20AND%2021%3D21\"",
+                "http_request": "GET /artists.php?artist=3%20AND%2070%3D70%20AND%2021%3D21 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "SQL Injection via injection in the parameter artist",
+                "level": 4,
+                "method": "GET",
+                "module": "sql",
+                "parameter": "artist",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "WSTG-INPV-05"
+                ]
+            },
+            {
+                "curl_command": "curl \"http://testphp.vulnweb.com/artists.php?artist=2%20AND%2048%3D48%20AND%2045%3D45\"",
+                "http_request": "GET /artists.php?artist=2%20AND%2048%3D48%20AND%2045%3D45 HTTP/1.1\nhost: testphp.vulnweb.com\nconnection: keep-alive\nuser-agent: Mozilla/5.0 (Windows NT 6.1; rv:45.0) Gecko/20100101 Firefox/45.0\naccept-language: en-US\naccept-encoding: gzip, deflate, br\naccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                "info": "SQL Injection via injection in the parameter artist",
+                "level": 4,
+                "method": "GET",
+                "module": "sql",
+                "parameter": "artist",
+                "path": "/artists.php",
+                "referer": "",
+                "wstg": [
+                    "WSTG-INPV-05"
+                ]
+            }
+        ],
+        "Secure Flag cookie": [],
+        "Server Side Request Forgery": [],
+        "Stored Cross Site Scripting": [],
+        "Subdomain takeover": [],
+        "TLS/SSL misconfigurations": [],
+        "Weak credentials": [],
+        "XML External Entity": []
+    }
+}

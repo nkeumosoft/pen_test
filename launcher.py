@@ -55,7 +55,7 @@ class WpPentest:
 
             verbosity = 0
             timeout = 6.0
-            modules = "wp_enum"
+            modules = ""
 
             wapiti.verbosity(verbosity)
             wapiti.set_color()
@@ -103,8 +103,9 @@ class WpPentest:
 
             await wapiti.attack(global_stop_event)
             attack_results = await wapiti.get_result()
-            print(json.dumps(attack_results))
-
+            print(json.dumps(attack_results, sort_keys=True, indent=4))
+            with open('resut.json', 'w') as file:
+                file.write(json.dumps(attack_results, sort_keys=True, indent=4))
         except OperationalError:
             logging.error(
                 _("[!] Can't store information in persister. SQLite database must have been locked by another process")
@@ -115,5 +116,5 @@ class WpPentest:
 
 
 if __name__ == '__main__':
-    web = WpPentest("https://jquery.com/")
+    web = WpPentest("http://testphp.vulnweb.com/artists.php?artist=1")
     asyncio.run(web.execute())
