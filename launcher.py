@@ -5,17 +5,16 @@ import sys
 from dataclasses import dataclass
 from sqlite3 import OperationalError
 
-from wapitiCore.main.wapiti import fix_url_path, is_valid_endpoint, \
-    InvalidOptionValue
 from wapitiCore.language.language import _
-
+from wapitiCore.main.wapiti import (InvalidOptionValue, fix_url_path,
+                                    is_valid_endpoint)
 from wapitiCore.net.web import Request
 
 from business.wapitiapi import WapitiWeb
 
 
 @dataclass
-class WpPentest:
+class WebsitePentest:
     _url: str
 
     @property
@@ -26,9 +25,9 @@ class WpPentest:
     def url(self, url: str):
         self._url = url
 
-    async def execute(self):
+    async def execute(self, modules=None):
         global_stop_event = asyncio.Event()
-        scope = "folder"
+        scope = "folder"    # Different values ("page", "folder", "domain", "url", "punk")
         store_session = store_config = None
 
         wapiti = WapitiWeb(
@@ -42,7 +41,7 @@ class WpPentest:
             depth = 40
             max_file_per_dir = 0
             max_link_per_page = 100
-            scan_force = "normal"
+            scan_force = "normal"   # Different values ("paranoid", "sneaky", "polite", "normal", "aggressive", "insane")
             max_scan_time = 0
             max_attack_time = 0
 
@@ -53,9 +52,11 @@ class WpPentest:
             wapiti.set_max_scan_time(max_scan_time)
             wapiti.set_max_attack_time(max_attack_time)
 
-            verbosity = 0
+            verbosity = 0   # Different values (0, 1, 2)
             timeout = 6.0
-            modules = ""
+
+            if modules is None:
+                modules = "common"
 
             wapiti.verbosity(verbosity)
             wapiti.set_color()
@@ -64,14 +65,17 @@ class WpPentest:
 
             format_generator = "html"
             check_ssl = False
-            level = 1
+            level = 1   # Different value (1, 2)
             tasks = 32
 
             wapiti.set_report_generator_type(format_generator)
             wapiti.set_verify_ssl(check_ssl)
 
-            attack_options = {"level": level, "timeout": timeout,
-                              "tasks": tasks}
+            attack_options = {
+                "level": level,
+                "timeout": timeout,
+                "tasks": tasks,
+            }
 
             dns_endpoint = "dns.wapiti3.ovh"
             endpoint = "https://wapiti3.ovh/"
@@ -97,24 +101,25 @@ class WpPentest:
                 pass
             else:
                 await wapiti.load_scan_state()
-                await wapiti.browse(global_stop_event,
-                                    parallelism=32)
+                await wapiti.browse(global_stop_event, parallelism=32)
                 await wapiti.save_scan_state()
 
             await wapiti.attack(global_stop_event)
             attack_results = await wapiti.get_result()
-            print(json.dumps(attack_results, sort_keys=True, indent=4))
-            with open('resut.json', 'w') as file:
-                file.write(json.dumps(attack_results, sort_keys=True, indent=4))
+            print(json.dumps(attack_results))
+
         except OperationalError:
             logging.error(
-                _("[!] Can't store information in persister. SQLite database must have been locked by another process")
+                _(
+                    "[!] Can't store information in persister. SQLite database"
+                    " must have been locked by another process"
+                )
             )
             logging.error(_("[!] You should unlock and launch Wapiti again."))
         except SystemExit:
             pass
 
 
-if __name__ == '__main__':
-    web = WpPentest("http://testphp.vulnweb.com/artists.php?artist=1")
-    asyncio.run(web.execute())
+if __name__ == "__main__":
+    web = WebsitePentest("https://www.tesla.com/")
+    asyncio.run(web.execute("drupal_enum"))
