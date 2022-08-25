@@ -5,10 +5,9 @@ import sys
 from dataclasses import dataclass
 from sqlite3 import OperationalError
 
-from wapitiCore.main.wapiti import fix_url_path, is_valid_endpoint, \
-    InvalidOptionValue
 from wapitiCore.language.language import _
-
+from wapitiCore.main.wapiti import (InvalidOptionValue, fix_url_path,
+                                    is_valid_endpoint)
 from wapitiCore.net.web import Request
 
 from business.wapitiapi import WapitiWeb
@@ -26,7 +25,7 @@ class WpPentest:
     def url(self, url: str):
         self._url = url
 
-    async def execute(self):
+    async def execute(self, modules=None):
         global_stop_event = asyncio.Event()
         scope = "folder"
         store_session = store_config = None
@@ -55,7 +54,9 @@ class WpPentest:
 
             verbosity = 0
             timeout = 6.0
-            modules = "wp_enum"
+
+            if modules is None:
+                modules = "common"
 
             wapiti.verbosity(verbosity)
             wapiti.set_color()
@@ -70,8 +71,11 @@ class WpPentest:
             wapiti.set_report_generator_type(format_generator)
             wapiti.set_verify_ssl(check_ssl)
 
-            attack_options = {"level": level, "timeout": timeout,
-                              "tasks": tasks}
+            attack_options = {
+                "level": level,
+                "timeout": timeout,
+                "tasks": tasks,
+            }
 
             dns_endpoint = "dns.wapiti3.ovh"
             endpoint = "https://wapiti3.ovh/"
@@ -97,8 +101,7 @@ class WpPentest:
                 pass
             else:
                 await wapiti.load_scan_state()
-                await wapiti.browse(global_stop_event,
-                                    parallelism=32)
+                await wapiti.browse(global_stop_event, parallelism=32)
                 await wapiti.save_scan_state()
 
             await wapiti.attack(global_stop_event)
@@ -107,13 +110,16 @@ class WpPentest:
 
         except OperationalError:
             logging.error(
-                _("[!] Can't store information in persister. SQLite database must have been locked by another process")
+                _(
+                    "[!] Can't store information in persister. SQLite database"
+                    " must have been locked by another process"
+                )
             )
             logging.error(_("[!] You should unlock and launch Wapiti again."))
         except SystemExit:
             pass
 
 
-if __name__ == '__main__':
-    web = WpPentest("https://jquery.com/")
-    asyncio.run(web.execute())
+if __name__ == "__main__":
+    web = WpPentest("https://www.tesla.com/")
+    asyncio.run(web.execute("drupal_enum"))
