@@ -14,7 +14,7 @@ from business.wapitiapi import WapitiWeb
 
 
 @dataclass
-class WpPentest:
+class WebsitePentest:
     _url: str
 
     @property
@@ -27,7 +27,7 @@ class WpPentest:
 
     async def execute(self, modules=None):
         global_stop_event = asyncio.Event()
-        scope = "folder"
+        scope = "folder"    # Different values ("page", "folder", "domain", "url", "punk")
         store_session = store_config = None
 
         wapiti = WapitiWeb(
@@ -41,7 +41,7 @@ class WpPentest:
             depth = 40
             max_file_per_dir = 0
             max_link_per_page = 100
-            scan_force = "normal"
+            scan_force = "normal"   # Different values ("paranoid", "sneaky", "polite", "normal", "aggressive", "insane")
             max_scan_time = 0
             max_attack_time = 0
 
@@ -52,7 +52,7 @@ class WpPentest:
             wapiti.set_max_scan_time(max_scan_time)
             wapiti.set_max_attack_time(max_attack_time)
 
-            verbosity = 0
+            verbosity = 0   # Different values (0, 1, 2)
             timeout = 6.0
 
             if modules is None:
@@ -65,7 +65,7 @@ class WpPentest:
 
             format_generator = "html"
             check_ssl = False
-            level = 1
+            level = 1   # Different value (1, 2)
             tasks = 32
 
             wapiti.set_report_generator_type(format_generator)
@@ -121,5 +121,5 @@ class WpPentest:
 
 
 if __name__ == "__main__":
-    web = WpPentest("https://www.tesla.com/")
+    web = WebsitePentest("https://www.tesla.com/")
     asyncio.run(web.execute("drupal_enum"))
