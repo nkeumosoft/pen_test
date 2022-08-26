@@ -230,87 +230,78 @@ class PenTestAttacks(Wapiti):
 
 @dataclass
 class InitPenTest:
-    _url: str
-    scope: str = field(default='folder')
+    url: str
+    scope: str = field(default='folder')  # ("page", "folder", "domain", "url", "punk")
+    depth: int = field(default=40)
+    max_file_per_dir: int = field(default=0)
+    max_link_per_page: int = field(default=100)
+    scan_force: str = field(default="normal")  # ("paranoid", "sneaky", "polite", "normal", "aggressive", "insane")
+    max_scan_time: int = field(default=0)
+    max_attack_time: int = field(default=0)
+    verbosity: int = field(default=0)  # (0, 1, 2)
+    timeout: float = field(default=6.0)
+    check_ssl: bool = field(default=False)
+    level: int = field(default=1)  # (1, 2)
+    tasks: int = field(default=32)
+    dns_endpoint: str = field(default="dns.wapiti3.ovh")
+    endpoint: str = field(default="https://wapiti3.ovh/")
 
     async def execute(self, modules=None):
         global_stop_event = asyncio.Event()
-        scope = "folder"  # Different values ("page", "folder", "domain", "url", "punk")
-        store_session = store_config = None
+        store_session = None
+        store_config = None
 
-        wapiti = PenTestAttacks(
-            scope_request=Request(self._url),
-            scope=scope,
+        pta = PenTestAttacks(
+            scope_request=Request(self.url),
+            scope=self.scope,
             session_dir=store_session,
             config_dir=store_config,
         )
 
         try:
-            depth = 40
-            max_file_per_dir = 0
-            max_link_per_page = 100
-            scan_force = "normal"  # Different values ("paranoid", "sneaky", "polite", "normal", "aggressive", "insane")
-            max_scan_time = 0
-            max_attack_time = 0
-
-            wapiti.set_max_depth(depth)
-            wapiti.set_max_files_per_dir(max_file_per_dir)
-            wapiti.set_max_links_per_page(max_link_per_page)
-            wapiti.set_scan_force(scan_force)
-            wapiti.set_max_scan_time(max_scan_time)
-            wapiti.set_max_attack_time(max_attack_time)
-
-            verbosity = 0  # Different values (0, 1, 2)
-            timeout = 6.0
+            pta.set_max_depth(self.depth)
+            pta.set_max_files_per_dir(self.max_file_per_dir)
+            pta.set_max_links_per_page(self.max_link_per_page)
+            pta.set_scan_force(self.scan_force)
+            pta.set_max_scan_time(self.max_scan_time)
+            pta.set_max_attack_time(self.max_attack_time)
 
             if modules is None:
                 modules = "common"
 
-            wapiti.verbosity(verbosity)
-            wapiti.set_color()
-            wapiti.set_timeout(timeout=timeout)
-            wapiti.set_modules(modules)
+            pta.verbosity(self.verbosity)
+            pta.set_color()
+            pta.set_timeout(timeout=self.timeout)
+            pta.set_modules(modules)
+            pta.set_verify_ssl(self.check_ssl)
 
-            check_ssl = False
-            level = 1  # Different value (1, 2)
-            tasks = 32
+            attack_options = {"level": self.level, "timeout": self.timeout, "tasks": self.tasks,
+                              "dns_endpoint": self.dns_endpoint}
 
-            wapiti.set_verify_ssl(check_ssl)
-
-            attack_options = {
-                "level": level,
-                "timeout": timeout,
-                "tasks": tasks,
-            }
-
-            dns_endpoint = "dns.wapiti3.ovh"
-            endpoint = "https://wapiti3.ovh/"
-
-            attack_options["dns_endpoint"] = dns_endpoint
-            endpoint = fix_url_path(endpoint)
-            if is_valid_endpoint("ENDPOINT", endpoint):
-                attack_options["external_endpoint"] = endpoint
-                attack_options["internal_endpoint"] = endpoint
+            self.endpoint = fix_url_path(self.endpoint)
+            if is_valid_endpoint("ENDPOINT", self.endpoint):
+                attack_options["external_endpoint"] = self.endpoint
+                attack_options["internal_endpoint"] = self.endpoint
             else:
-                raise InvalidOptionValue("--endpoint", endpoint)
+                raise InvalidOptionValue("--endpoint", self.endpoint)
 
-            wapiti.set_attack_options(attack_options)
-            await wapiti.init_persister()
-            await wapiti.init_crawler()
+            pta.set_attack_options(attack_options)
+            await pta.init_persister()
+            await pta.init_crawler()
 
         except InvalidOptionValue as msg:
             logging.error(msg)
             sys.exit(2)
 
         try:
-            if await wapiti.have_attacks_started() and True:
+            if await pta.have_attacks_started() and True:
                 pass
             else:
-                await wapiti.load_scan_state()
-                await wapiti.browse(global_stop_event, parallelism=32)
-                await wapiti.save_scan_state()
-            await wapiti.attack(global_stop_event)
-            attack_results = await wapiti.get_result()
+                await pta.load_scan_state()
+                await pta.browse(global_stop_event, parallelism=32)
+                await pta.save_scan_state()
+            await pta.attack(global_stop_event)
+            attack_results = await pta.get_result()
             return attack_results
 
         except OperationalError:
@@ -325,4 +316,5 @@ class InitPenTest:
             pass
 
 
-result = asyncio.run(InitPenTest('https://www.tesla.com/').execute('drupal_enum'))
+result = asyncio.run(InitPenTest('https://www.tesla.com/').execute('sql'))
+print(result)
