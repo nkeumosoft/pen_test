@@ -4,15 +4,15 @@ from uuid import UUID
 
 
 class IWebsite(metaclass=abc.ABCMeta):
-    @property
+    @abc.abstractproperty
     def uuid(self) -> UUID:
         ...
 
-    @property
+    @abc.abstractproperty
     def name(self) -> str:
         ...
 
-    @property
+    @abc.abstractproperty
     def url(self) -> str:
         ...
 

@@ -4,6 +4,7 @@ import os
 import sys
 from dataclasses import dataclass, field
 from sqlite3 import OperationalError
+from typing import Dict
 
 import httpx
 
@@ -315,6 +316,5 @@ class InitPenTest:
         except SystemExit:
             pass
 
-
-result = asyncio.run(InitPenTest('https://www.tesla.com/').execute('sql'))
-print(result)
+# result = asyncio.run(InitPenTest('https://testdriven.io').execute())
+# print(result)
