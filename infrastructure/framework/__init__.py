@@ -11,16 +11,24 @@ migrate = Migrate()
 
 def create_app(script_info=None):
     # instantiate the app
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='templates')
+
     app_settings = os.getenv('APP_SETTINGS')
     app.config.from_object(app_settings)
+    app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+    app.config['SECRET_KEY'] = 'secret'
 
     # init data base
     db.init_app(app)
     migrate.init_app(app, db)
 
     # init admin
-    admin = Admin(app, name='Penetration Testing Tool', template_mode='bootstrap3')
+    from infrastructure.framework.views import Home
+    admin = Admin(app, name='Penetration Testing', template_mode='bootstrap3', url='/admin')
+    # Add administrative views here
+    from infrastructure.framework.views import Home
+    admin.add_view(Home())
+    app.run()
 
     app.shell_context_processor({'app': app, 'db': db})
     return app
