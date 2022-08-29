@@ -9,6 +9,8 @@ class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_ENABLED = False
+    CSRF_ENABLED = True
+    
 
 
 # defining dev config
@@ -17,6 +19,8 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     FLASK_ADMIN_SWATCH = 'cerulean'
     DEBUG_TB_ENABLED = True
+
+
 
 
 # defining testing config

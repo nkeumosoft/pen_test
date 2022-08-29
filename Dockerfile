@@ -9,10 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install environment dependencies
-RUN apt-get update -yqq \
-  && apt-get install -yqq --no-install-recommends \
-  netcat \
-  && apt-get -q clean \
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends netcat && apt-get -q clean
 
 # install dependencies
 RUN pip install --upgrade pip
