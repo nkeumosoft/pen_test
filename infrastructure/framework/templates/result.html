@@ -1,0 +1,53 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                name: <h1 class="title">{{ name }}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">attack name</th>
+                        <th scope="col">number</th>
+                        <th scope="col">details</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for vulnerability in vulnerabilities %}
+
+                        <tr>
+                            <th scope="row"> {{ forloop.counter }} </th>
+                            <td>vulnerability.name</td>
+                            <td>vulnerability.number</td>
+                            <td><a href="{{ url_for('admin') }}"></a></td>
+                        </tr>
+                        {% empty %}
+                        <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                              <span class="tilte text-center">
+                                Sorry no Result Not found
+                              </span>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

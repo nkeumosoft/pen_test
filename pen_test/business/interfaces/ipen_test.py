@@ -25,17 +25,17 @@ class IPenTestResult(metaclass=abc.ABCMeta):
     def get_vul_by_uuid(self, uuid:UUID) -> VulnerabilityEntity:
         ...
 
-    @abc.abstractmethod
-    def get_vul_by_website(self, website: UUID) -> VulnerabilityEntity:
-        ...
+    # @abc.abstractmethod
+    # def get_vul_by_website(self, website: UUID) -> VulnerabilityEntity:
+    #     ...
 
     @abc.abstractmethod
     def get_anomaly_by_uuid(self, uuid: UUID) -> AnomaliesEntity:
         ...
 
-    @abc.abstractmethod
-    def get_anomaly_by_website(self, website: UUID) -> AnomaliesEntity:
-        ...
+    # @abc.abstractmethod
+    # def get_anomaly_by_website(self, website: UUID) -> AnomaliesEntity:
+    #     ...
 
     @abc.abstractmethod
     def list_vul(self) -> List[VulnerabilityEntity]:
