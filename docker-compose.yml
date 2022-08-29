@@ -15,7 +15,7 @@ services:
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=infrastructure.framework.config.DevelopmentConfig
-      - DATABASE_URL=postgres://postgres:postgres@pentest-db:5432/pentest_db
+      - DATABASE_URL=postgresql://postgres:postgres@pentest-db:5432/pentest_db
       - SECRET_KEY='MY SECRET'
     depends_on:
       - pentest-db
