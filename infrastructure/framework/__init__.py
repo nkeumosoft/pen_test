@@ -26,8 +26,11 @@ def create_app(script_info=None):
     from infrastructure.framework.views import Home
     admin = Admin(app, name='Penetration Testing', template_mode='bootstrap3', url='/admin')
     # Add administrative views here
-    from infrastructure.framework.views import Home
+    from infrastructure.framework.views import Home, Anomalies, Vulnerabilities
     admin.add_view(Home())
+    admin.add_view(Anomalies())
+    admin.add_view(Vulnerabilities())
+
     app.run()
 
     app.shell_context_processor({'app': app, 'db': db})
