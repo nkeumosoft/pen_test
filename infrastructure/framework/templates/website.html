@@ -1,0 +1,21 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+
+
+
+
+
+
+
+    {{ request.method }}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+    <p>{{form.url.label}}<br>
+    {{form.url}}<br>
+    </p>
+    <p>{{form.name.label}}<br>
+    {{form.name}}<br>
+    </p>
+    <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
