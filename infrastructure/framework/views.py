@@ -65,17 +65,17 @@ class Anomalies(BaseView):
 
     @expose('/')
     def index(self):
-        # vul_repo = VulnerabilityRepository(db=db,
-        #                                    model=PenTestVulnerability)
-        # anomalies_repo = AnomaliesRepository(db=db,
-        #                                      model=PentestAnomalies)
-        #
-        # pent_result = PenTestResult(
-        #     _url='',
-        #     _vul_repo=vul_repo,
-        #     _anomaly_repo=anomalies_repo,
-        # )
-        anomalies = [] #pent_result.list_anomaly()
+        vul_repo = VulnerabilityRepository(db=db,
+                                           model=PenTestVulnerability)
+        anomalies_repo = AnomaliesRepository(db=db,
+                                             model=PentestAnomalies)
+
+        pent_result = PenTestResult(
+            _url='',
+            _vul_repo=vul_repo,
+            _anomaly_repo=anomalies_repo,
+        )
+        anomalies = pent_result.list_anomaly()
         return self.render('result.html', request=request, name="API_v1",
                            vulnerabilities=anomalies)
 
