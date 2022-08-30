@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from flask import request, redirect, url_for
 from flask_admin import expose, BaseView
@@ -22,8 +23,8 @@ class Home(BaseView):
             vul_repo = VulnerabilityRepository(db, PenTestVulnerability)
             anomaly_repo = AnomaliesRepository(db, PentestAnomalies)
             pen_test = PentTestRun(website_repo, vul_repo, anomaly_repo, form.data['url'], form.data['name'])
-            asyncio.run(pen_test.run())
-            return redirect(url_for('/admin'))
+            pen_test.run()
+            return redirect(url_for('admin.index'))
         return self.render('website.html', request=request, form=form)
 
 
@@ -55,7 +56,8 @@ class Vulnerabilities(BaseView):
                 _anomaly_repo=anomalies_repo,
             )
             vulnerabilities = pent_result.get_vul_by_uuid(key)
-            return self.render('result.html', request=request, name=Vulnerabilities,
+            logging.error(vulnerabilities)
+            return self.render('detail.html', request=request, name=vulnerabilities.attack_name,
                                vulnerabilities=vulnerabilities)
 
 
@@ -75,7 +77,7 @@ class Anomalies(BaseView):
         )
         anomalies = pent_result.list_anomaly()
         return self.render('result.html', request=request, name="anomalies",
-                           vulnerabilities=anomalies)
+                           Anomalies=anomalies)
 
     @expose('/<key>')
     def details(self, key):
@@ -90,7 +92,8 @@ class Anomalies(BaseView):
                 _anomaly_repo=anomalies_repo,
             )
             anomalies_details = pent_result.get_anomaly_by_uuid(key)
-            return self.render('result.html', request=request, name="anomalies",
-                               vulnerabilities=anomalies_details)
+
+            return self.render('detail.html', request=request, name=anomalies_details.name,
+                               Anomalies=anomalies_details)
 
         return redirect('/')
