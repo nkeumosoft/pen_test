@@ -1,0 +1,56 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col">
+                <table data-toggle="table" class="table">
+
+                    {% if Anomalies %}
+                        <table data-toggle="table" class="table">
+                            <tr>
+                                <td>attack name: <h1>{{ Anomalies.name }}</h1></td>
+                                <td>number found : <h1>{{ Anomalies.number }}</h1></td>
+
+
+                            </tr>
+                        </table>
+                        {% for anomaly in Anomalies.details %}
+                            {% for key, value in anomaly.items() %}
+                                <pre style="white-space: normal;">
+                                     <p>{{ key }}: {{ value }}</p>
+                                 </pre>
+
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+
+
+
+                    {% if vulnerabilities %}
+                        <table data-toggle="table" class="table">
+                            <tr>
+
+                                <td>attack name: <h1>{{ vulnerabilities.attack_name }}</h1></td>
+                                <td>number found : <h1>{{ vulnerabilities.num_vulnerability }}</h1></td>
+
+
+                            </tr>
+                        </table>
+
+                        {% for vulnerability in vulnerabilities.attack_details %}
+                            {% for key, value in vulnerability.items() %}
+                                <pre style="white-space: normal;">
+                                <p>{{ key }}: {{ value }}</p>
+                            </pre>
+
+                            {% endfor %}
+                        {% endfor %}
+
+                    {% endif %}
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
