@@ -22,8 +22,10 @@ class Home(BaseView):
             vul_repo = VulnerabilityRepository(db, PenTestVulnerability)
             anomaly_repo = AnomaliesRepository(db, PentestAnomalies)
             pen_test = PentTestRun(website_repo, vul_repo, anomaly_repo, form.data['url'], form.data['name'])
-            asyncio.run(pen_test.run())
-            return redirect(url_for('/admin'))
+
+            pen_test.run()
+
+            return redirect(url_for('admin.index'))
         return self.render('website.html', request=request, form=form)
 
 
@@ -75,7 +77,7 @@ class Anomalies(BaseView):
         )
         anomalies = pent_result.list_anomaly()
         return self.render('result.html', request=request, name="anomalies",
-                           vulnerabilities=anomalies)
+                           anomalies=anomalies)
 
     @expose('/<key>')
     def details(self, key):
@@ -91,6 +93,6 @@ class Anomalies(BaseView):
             )
             anomalies_details = pent_result.get_anomaly_by_uuid(key)
             return self.render('result.html', request=request, name="anomalies",
-                               vulnerabilities=anomalies_details)
+                               anomalies=anomalies_details)
 
         return redirect('/')

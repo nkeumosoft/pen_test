@@ -12,10 +12,10 @@ class IPentTestRun(metaclass=abc.ABCMeta):
         ...
 
     @abc.abstractmethod
-    def create_vul(self, vul: Dict, website_id: UUID) -> VulnerabilityEntity:
+    def create_vul(self, vul: Dict) -> VulnerabilityEntity:
         ...
 
-    def create_anomalies(self, anomaly: Dict, website_id: UUID) -> AnomaliesEntity:
+    def create_anomalies(self, anomaly: Dict) -> AnomaliesEntity:
         ...
 
 
