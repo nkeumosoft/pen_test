@@ -9,54 +9,46 @@
         <div class="row">
             <div class="col">
                 <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">attack name</th>
+                        <th scope="col">number found</th>
+                        <th scope="col">details</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if Anomalies %}
+                        {% for anomalies in Anomalies %}
+
+                            <tr>
+                                <td>{{ anomalies.name }}</td>
+                                <td>{{ anomalies.number }}</td>
+                                <td>
+                                    <a href="{{ url_for( 'anomalies.details', key=anomalies.id  ) }}">
+                                        see more details ...
+                                    </a></td>
+                            </tr>
+
+                        {% endfor %}
+                    {% endif %}
+
                     {% if vulnerabilities %}
-                        <thead>
-                        <tr>
-                            <th scope="col">attack name</th>
-                            <th scope="col">number</th>
-                            <th scope="col">details</th>
-                        </tr>
-                        </thead>
-                        <tbody>
                         {% for vulnerability in vulnerabilities %}
 
                             <tr>
                                 <td>{{ vulnerability.attack_name }}</td>
                                 <td>{{ vulnerability.num_vulnerability }}</td>
-                                <td><a href="#">{{ vulnerability.id }}</a></td>
+                                <td>
+                                    <a href="{{ url_for('vulnerabilities.details', key=vulnerability.id  ) }}">
+                                        see more details ...
+                                    </a>
+                                </td>
                             </tr>
 
                         {% endfor %}
-
-
-                        </tbody>
                     {% endif %}
 
-
-                    {% if anomalies %}
-                        <thead>
-                        <tr>
-                            <th scope="col">attack name</th>
-                            <th scope="col">number</th>
-                            <th scope="col">details</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{ anomalies }}
-                        {% for anomaly in anomalies %}
-
-                            <tr>
-                                <td>{{ anomalies.attack_name }}</td>
-                                <td>{{ anomalies.number }}</td>
-                                <td><a href="#">{{ anomalies.id }}</a></td>
-                            </tr>
-
-                        {% endfor %}
-
-
-                        </tbody>
-                    {% endif %}
-
+                    </tbody>
                 </table>
             </div>
         </div>
