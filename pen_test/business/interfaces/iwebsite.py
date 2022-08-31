@@ -4,18 +4,9 @@ from uuid import UUID
 
 
 class IWebsite(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
-    def uuid(self) -> UUID:
-        ...
-
-    @abc.abstractproperty
-    def name(self) -> str:
-        ...
-
-    @abc.abstractproperty
-    def url(self) -> str:
-        ...
 
     @classmethod
-    def factory(cls, name: str, url: str, uuid: Optional[UUID] = None) -> 'IWebsite':
+    def factory(
+            cls, name: str, url: str, uuid: Optional[UUID] = None, anomalies=None, vulnerabilities=None
+    ) -> 'IWebsite':
         ...

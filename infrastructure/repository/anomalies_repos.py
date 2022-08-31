@@ -36,8 +36,7 @@ class AnomaliesRepository(IAnomaliesRepository):
         return [self._factory_anomalies_entity(instance) for instance in instances]
 
     def create(self, anomaly: AnomaliesEntity) -> AnomaliesEntity:
-        instance = self._model.__int__(
-            anomaly_id=anomaly.uuid,
+        instance = self._model(
             website_id=anomaly.website_id,
             name=anomaly.name,
             number=anomaly.number,
@@ -49,7 +48,7 @@ class AnomaliesRepository(IAnomaliesRepository):
     @staticmethod
     def _factory_anomalies_entity(instance: PentestAnomalies) -> AnomaliesEntity:
         return AnomaliesEntity.factory(
-            uuid=instance.id,
+            id=instance.id,
             website_id=instance.website_id,
             name=instance.name,
             number=instance.number,

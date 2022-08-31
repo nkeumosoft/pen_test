@@ -1,6 +1,10 @@
 import abc
+from typing import List
 from uuid import UUID
 
+from infrastructure.framework.models import PenTestVulnerability, PentestAnomalies, Website
+from pen_test.business.interfaces.ianomalies import IAnomalies
+from pen_test.business.interfaces.ivulnerability import IVulnerability
 from pen_test.business.interfaces.iwebsite import IWebsite
 
 

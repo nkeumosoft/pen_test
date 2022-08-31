@@ -11,39 +11,42 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">attack name</th>
-                        <th scope="col">number</th>
+                        <th scope="col">number found</th>
                         <th scope="col">details</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for vulnerability in vulnerabilities %}
+                    {% if Anomalies %}
+                        {% for anomalies in Anomalies %}
 
-                        <tr>
-                            <th scope="row"> {{ forloop.counter }} </th>
-                            <td>vulnerability.name</td>
-                            <td>vulnerability.number</td>
-                            <td><a href="{{ url_for('admin') }}"></a></td>
-                        </tr>
-                        {% empty %}
-                        <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                              <span class="tilte text-center">
-                                Sorry no Result Not found
-                              </span>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        </tbody>
-                    {% endfor %}
+                            <tr>
+                                <td>{{ anomalies.name }}</td>
+                                <td>{{ anomalies.number }}</td>
+                                <td>
+                                    <a href="{{ url_for( 'anomalies.details', key=anomalies.id  ) }}">
+                                        see more details ...
+                                    </a></td>
+                            </tr>
 
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if vulnerabilities %}
+                        {% for vulnerability in vulnerabilities %}
+
+                            <tr>
+                                <td>{{ vulnerability.attack_name }}</td>
+                                <td>{{ vulnerability.num_vulnerability }}</td>
+                                <td>
+                                    <a href="{{ url_for('vulnerabilities.details', key=vulnerability.id  ) }}">
+                                        see more details ...
+                                    </a>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    {% endif %}
 
                     </tbody>
                 </table>
