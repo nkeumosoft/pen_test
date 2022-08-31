@@ -18,7 +18,7 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
     app.config['SECRET_KEY'] = 'secret'
-    
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///wordcount_dev"
     # init data base
     db.init_app(app)
     migrate.init_app(app, db)
