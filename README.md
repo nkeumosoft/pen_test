@@ -1,4 +1,5 @@
 # penetration testing with wapiti
+# Run with docker compose
 
 clone the code and run the following command
 
@@ -8,7 +9,16 @@ access the app on your local
 
 https://localhost:5000/admin/
 
-# Install Requirements
+# Run on virtual environment
+## Install python virtual environment
+
+`python3 -m venv venv`
+
+activate virtual environment
+
+`source venv/bin/activate`
+
+## Install Requirements
     pip install requirements.txt
 
 To get started, install Postgres on your local computer, if you don’t have it already. Since Heroku uses Postgres, it
@@ -28,7 +38,7 @@ and exit
 
 we are going to add a DATABASE_URL variable. Run this in the terminal:
 
-    $ export DATABASE_URL="postgresql:///pentest_db"
+    `$ export DATABASE_URL="postgresql:///pentest_db"`
 
 ! note that pentest_db is the name of your database that you have 
 create
