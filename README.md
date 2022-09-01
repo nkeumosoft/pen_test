@@ -38,7 +38,7 @@ and exit
 
 we are going to add a DATABASE_URL variable. Run this in the terminal:
 
-    `$ export DATABASE_URL="postgresql:///pentest_db"`
+    $ export DATABASE_URL="postgresql:///pentest_db"
 
 ! note that pentest_db is the name of your database that you have 
 create
