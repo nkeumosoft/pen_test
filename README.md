@@ -10,13 +10,17 @@ access the app on your local
 https://localhost:5000/admin/
 
 # Run on virtual environment
-## Install python virtual environment
+## Install python virtual environment on Unix os
 
 `python3 -m venv venv`
 
 activate virtual environment
 
 `source venv/bin/activate`
+
+## Install python virtual environment on windows
+
+https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-windows-10/
 
 ## Install Requirements
     pip install requirements.txt
