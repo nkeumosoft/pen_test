@@ -57,9 +57,3 @@ class we(IPentTestRun):
         loop.close()
         self.create_vul(result['_vulns'], website.id)
         self.create_anomalies(result['_anomalies'], website.id)
-
-
-
-
-
-

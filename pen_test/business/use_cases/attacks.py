@@ -314,6 +314,3 @@ class InitPenTest:
             logging.error(_("[!] You should unlock and launch Wapiti again."))
         except SystemExit:
             pass
-
-# result = asyncio.run(InitPenTest('https://www.tesla.com').execute())
-# print(result)

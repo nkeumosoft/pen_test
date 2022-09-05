@@ -43,7 +43,7 @@ class MyHomeView(AdminIndexView):
         list_of_website = website_repo.list()
         form = request.form.getlist('checked')
         if form:
-            thread_number = int(len(form)/2)
+            thread_number = int(len(form)/2) if len(form) > 1 else len(form)
 
             scan_list_website(form, thread_number)
             return redirect(url_for('admin.index'))
@@ -80,9 +80,6 @@ class MyHomeView(AdminIndexView):
         )
 
 
-
-
-
 class Home(BaseView):
     @expose('/', methods=['GET', 'POST'])
     def index(self):
@@ -90,14 +87,14 @@ class Home(BaseView):
         if form.validate_on_submit():
             website_repo = WebsiteRepository(db, Website)
 
-            website_find = website_repo.find_by_url(form.get("url"))
+            website_find = website_repo.find_by_url(form.data.get("url"))
             if not website_find:
-                website_find = WebsiteEntity(url=form.get("url"), name=form.get("name"))
+                website_find = WebsiteEntity(url=form.data.get("url"), name=form.data.get("name"))
 
                 create_website(website_find)
             else:
-                website_find.url = form.get("url")
-                website_find.name = form.get("name")
+                website_find.url = form.data.get("url")
+                website_find.name = form.data.get("name")
                 update_website(website_find)
 
             return redirect(url_for('admin.index'))
@@ -149,12 +146,11 @@ class Vulnerabilities(BaseView):
 
         url = request.form.get("search")
         website_repo = WebsiteRepository(db, Website)
-
+        vulnerabilities = []
         if url:
-            website = website_repo.find(url)
+            website = website_repo.find_by_url(url)
             if website:
                 vulnerabilities = vul_repo.filter_list_by_website(website.id)
-        logging.error(vulnerabilities)
         return self.render('vulnerabilities_result.html',
                            request=request,
                            name="Vulnerabilities",
@@ -207,10 +203,8 @@ class Anomalies(BaseView):
         website_repo = WebsiteRepository(db, Website)
         anomalies = []
         if url:
-            website = website_repo.find(url)
+            website = website_repo.find_by_url(url)
             if website:
                 anomalies = anomalies_repo.filter_list_by_website(website.id)
         logging.error(anomalies)
         return self.render('anomalies_result.html', request=request, name="Anomalies", anomalies=anomalies)
-
-

@@ -44,5 +44,4 @@ class IPenTestResult(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def list_anomaly(self) -> List[AnomaliesEntity]:
         ...
-
    

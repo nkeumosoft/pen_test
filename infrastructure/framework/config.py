@@ -20,8 +20,6 @@ class DevelopmentConfig(BaseConfig):
     DEBUG_TB_ENABLED = True
 
 
-
-
 # defining testing config
 class TestingConfig(BaseConfig):
     """Testing configuration"""
