@@ -1,8 +1,5 @@
-import asyncio
-import logging
-
-from flask import request, redirect, url_for
-from flask_admin import expose, BaseView
+from flask import redirect, request, url_for
+from flask_admin import BaseView, expose
 
 from infrastructure.framework import db
 from infrastructure.framework.forms import WebsiteForm
@@ -40,6 +37,7 @@ class Vulnerabilities(BaseView):
             _anomaly_repo=anomalies_repo,
         )
         vulnerabilities = pent_result.list_vul()
+
         return self.render('result.html', request=request, name="Vulnerabilities",
                            vulnerabilities=vulnerabilities)
 
@@ -56,7 +54,7 @@ class Vulnerabilities(BaseView):
                 _anomaly_repo=anomalies_repo,
             )
             vulnerabilities = pent_result.get_vul_by_uuid(key)
-            logging.error(vulnerabilities)
+
             return self.render('detail.html', request=request, name=vulnerabilities.attack_name,
                                vulnerabilities=vulnerabilities)
 
@@ -76,6 +74,7 @@ class Anomalies(BaseView):
             _anomaly_repo=anomalies_repo,
         )
         anomalies = pent_result.list_anomaly()
+
         return self.render('result.html', request=request, name="anomalies",
                            Anomalies=anomalies)
 

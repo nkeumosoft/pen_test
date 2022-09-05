@@ -2,6 +2,7 @@ from typing import Dict, List
 from uuid import UUID
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 
 from infrastructure.framework.models import PentestAnomalies
 from pen_test.business.entity import AnomaliesEntity
@@ -32,7 +33,8 @@ class AnomaliesRepository(IAnomaliesRepository):
         return self._factory_anomalies_entity(instance)
 
     def list(self) -> List[AnomaliesEntity]:
-        instances = self._model.query.order_by(self._model.created_date).all()
+        instances = self._model.query.order_by(desc(self._model.created_date)).all()
+
         return [self._factory_anomalies_entity(instance) for instance in instances]
 
     def create(self, anomaly: AnomaliesEntity) -> AnomaliesEntity:
@@ -54,4 +56,3 @@ class AnomaliesRepository(IAnomaliesRepository):
             number=instance.number,
             details=instance.details
         )
-
