@@ -34,6 +34,7 @@ def create_app(script_info=None):
     # Add administrative views here
 
     admin.add_view(Home(name='Create Website'))
+    # admin.add_view(SearchView())
     admin.add_view(Anomalies())
     admin.add_view(Vulnerabilities())
 

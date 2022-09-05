@@ -16,6 +16,7 @@ from pen_test.business.entity import WebsiteEntity
 from pen_test.business.use_cases.crud_website import create_website, update_website
 from pen_test.business.use_cases.pentest import PentTestRun
 from pen_test.business.use_cases.pentest_result import PenTestResult
+from pen_test.business.use_cases.pentestresultdetail import launch_pentest, scan_list_website
 
 
 class MyHomeView(AdminIndexView):
@@ -42,7 +43,10 @@ class MyHomeView(AdminIndexView):
         list_of_website = website_repo.list()
         form = request.form.getlist('checked')
         if form:
-            return redirect(url_for('home.index'))
+            thread_number = int(len(form)/2)
+
+            scan_list_website(form, thread_number)
+            return redirect(url_for('admin.index'))
 
         page = request.args.get(get_page_parameter(), type=int, default=1)
 
@@ -59,9 +63,24 @@ class MyHomeView(AdminIndexView):
     @expose('/result/<key>', methods=['GET'])
     def result(self, key):
         website_repo = WebsiteRepository(db, Website)
-        list_of_website = website_repo.list()
+        website = website_repo.find(key)
+        anomaly_repository = AnomaliesRepository(db, PentestAnomalies)
+        vulnerability_repository = VulnerabilityRepository(db, PenTestVulnerability)
+        launch_pentest(website.id)
+        anomalies = anomaly_repository.filter_list_by_website(website.id)
+        vulnerabilities = vulnerability_repository.filter_list_by_website(website.id)
+        logging.error(anomalies)
+        return self.render(
+            'result_by_website.html',
 
-        return self.render('result.html', websites=list_of_website)
+            name="Vulnerabilities",
+            vulnerabilities=vulnerabilities,
+            anomalies=anomalies,
+            name1="anomalies"
+        )
+
+
+
 
 
 class Home(BaseView):
@@ -71,14 +90,14 @@ class Home(BaseView):
         if form.validate_on_submit():
             website_repo = WebsiteRepository(db, Website)
 
-            website_find = website_repo.find_by_url(form.data.get("url"))
+            website_find = website_repo.find_by_url(form.get("url"))
             if not website_find:
-                website_find = WebsiteEntity(url=form.data.get("url"), name=form.data.get("name"))
+                website_find = WebsiteEntity(url=form.get("url"), name=form.get("name"))
 
                 create_website(website_find)
             else:
-                website_find.url = form.data.get("url")
-                website_find.name = form.data.get("name")
+                website_find.url = form.get("url")
+                website_find.name = form.get("name")
                 update_website(website_find)
 
             return redirect(url_for('admin.index'))
@@ -104,7 +123,7 @@ class Vulnerabilities(BaseView):
         )
         vulnerabilities = pent_result.list_vul()
 
-        return self.render('result.html', request=request, name="Vulnerabilities",
+        return self.render('vulnerabilities_result.html', request=request, name="Vulnerabilities",
                            vulnerabilities=vulnerabilities)
 
     @expose('/<key>')
@@ -124,6 +143,23 @@ class Vulnerabilities(BaseView):
             return self.render('detail.html', request=request, name=vulnerabilities.attack_name,
                                vulnerabilities=vulnerabilities)
 
+    @expose('/search_vul', methods=['POST'])
+    def search_vul(self):
+        vul_repo = VulnerabilityRepository(db=db, model=PenTestVulnerability)
+
+        url = request.form.get("search")
+        website_repo = WebsiteRepository(db, Website)
+
+        if url:
+            website = website_repo.find(url)
+            if website:
+                vulnerabilities = vul_repo.filter_list_by_website(website.id)
+        logging.error(vulnerabilities)
+        return self.render('vulnerabilities_result.html',
+                           request=request,
+                           name="Vulnerabilities",
+                           vulnerabilities=vulnerabilities)
+
 
 class Anomalies(BaseView):
 
@@ -141,7 +177,7 @@ class Anomalies(BaseView):
         )
         anomalies = pent_result.list_anomaly()
 
-        return self.render('result.html', request=request, name="anomalies",
+        return self.render('anomalies_result.html', request=request, name="anomalies",
                            Anomalies=anomalies)
 
     @expose('/<key>')
@@ -162,3 +198,19 @@ class Anomalies(BaseView):
                                Anomalies=anomalies_details)
 
         return redirect('/')
+
+    @expose('/search_anomalies', methods=['POST'])
+    def search_anomalies(self):
+
+        anomalies_repo = AnomaliesRepository(db=db, model=PentestAnomalies)
+        url = request.form.get("search")
+        website_repo = WebsiteRepository(db, Website)
+        anomalies = []
+        if url:
+            website = website_repo.find(url)
+            if website:
+                anomalies = anomalies_repo.filter_list_by_website(website.id)
+        logging.error(anomalies)
+        return self.render('anomalies_result.html', request=request, name="Anomalies", anomalies=anomalies)
+
+

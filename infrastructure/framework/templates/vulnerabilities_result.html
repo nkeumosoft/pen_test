@@ -3,13 +3,24 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col">
+                <form class="form-inline" action="{{ url_for('vulnerabilities.search_vul') }}" method="post">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="url" class="sr-only">find by url</label>
+                        <input type="text" class="form-control" id="url" placeholder="website url">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Search</button>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col">
                 name: <h1 class="title">{{ name }}</h1>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <table class="table">
-                    <thead>
+                    <thead class="thead-dark">
                     <tr>
                         <th scope="col">attack name</th>
                         <th scope="col">number found</th>
@@ -17,20 +28,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% if Anomalies %}
-                        {% for anomalies in Anomalies %}
-
-                            <tr>
-                                <td>{{ anomalies.name }}</td>
-                                <td>{{ anomalies.number }}</td>
-                                <td>
-                                    <a href="{{ url_for( 'anomalies.details', key=anomalies.id  ) }}">
-                                        see more details ...
-                                    </a></td>
-                            </tr>
-
-                        {% endfor %}
-                    {% endif %}
 
                     {% if vulnerabilities %}
                         {% for vulnerability in vulnerabilities %}

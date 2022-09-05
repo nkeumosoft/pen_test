@@ -1,0 +1,97 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col">
+                    name: <h1 class="title">{{ name1 }}</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">attack name</th>
+                            <th scope="col">number found</th>
+                            <th scope="col">details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if Anomalies %}
+                            {% for anomalies in Anomalies %}
+
+                                <tr>
+                                    <td>{{ anomalies.name }}</td>
+                                    <td>{{ anomalies.number }}</td>
+                                    <td>
+                                        <a href="{{ url_for( 'anomalies.details', key=anomalies.id  ) }}">
+                                            see more details ...
+                                        </a></td>
+                                </tr>
+
+                            {% endfor %}
+                        {% endif %}
+
+
+                        {% for vulnerability in vulnerabilities %}
+
+                            <tr>
+                                <td>{{ vulnerability.attack_name }}</td>
+                                <td>{{ vulnerability.num_vulnerability }}</td>
+                                <td>
+                                    <a href="{{ url_for('vulnerabilities.details', key=vulnerability.id  ) }}">
+                                        see more details ...
+                                    </a>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col">
+                    name: <h1 class="title">{{ name }}</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">attack name</th>
+                            <th scope="col">number found</th>
+                            <th scope="col">details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for vulnerability in vulnerabilities %}
+
+                            <tr>
+                                <td>{{ vulnerability.attack_name }}</td>
+                                <td>{{ vulnerability.num_vulnerability }}</td>
+                                <td>
+                                    <a href="{{ url_for('vulnerabilities.details', key=vulnerability.id  ) }}">
+                                        see more details ...
+                                    </a>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
