@@ -10,7 +10,6 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_ENABLED = False
     CSRF_ENABLED = True
-    
 
 
 # defining dev config
