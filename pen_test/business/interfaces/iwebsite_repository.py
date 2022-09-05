@@ -1,4 +1,5 @@
 import abc
+from typing import List
 from uuid import UUID
 
 from pen_test.business.interfaces.iwebsite import IWebsite
@@ -16,4 +17,8 @@ class IWebsiteRepository(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def create(self, website: IWebsite) -> IWebsite:
+        ...
+
+    @abc.abstractmethod
+    def list(self) -> List[IWebsite]:
         ...

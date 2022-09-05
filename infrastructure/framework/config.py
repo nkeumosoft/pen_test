@@ -9,9 +9,10 @@ class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_ENABLED = False
+    CSRF_ENABLED = True
 
 
-# definining dev config
+# defining dev config
 class DevelopmentConfig(BaseConfig):
     """Development configuration"""
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
