@@ -12,7 +12,7 @@ from pen_test.business.use_cases.attacks import InitPenTest
 
 
 @dataclass
-class PentTestRun(IPentTestRun):
+class we(IPentTestRun):
     _website_repo: IWebsiteRepository
     _vul_repo: IVulnerabilityRepository
     _anomaly_repo: IAnomaliesRepository
@@ -57,6 +57,7 @@ class PentTestRun(IPentTestRun):
         loop.close()
         self.create_vul(result['_vulns'], website.id)
         self.create_anomalies(result['_anomalies'], website.id)
+
 
 
 

@@ -24,6 +24,10 @@ class IAnomaliesRepository(metaclass=abc.ABCMeta):
         ...
 
     @abc.abstractmethod
+    def filter_list_by_website(self, website: UUID) -> List[IAnomalies]:
+        ...
+
+    @abc.abstractmethod
     def create(self, anomaly: IAnomalies) -> IAnomalies:
         ...
 

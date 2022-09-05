@@ -1,11 +1,12 @@
-import logging
+from typing import List
 from typing import List
 from uuid import UUID
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 
-from infrastructure.framework.models import PenTestVulnerability, PentestAnomalies, Website
-from pen_test.business.entity import AnomaliesEntity, VulnerabilityEntity, WebsiteEntity
+from infrastructure.framework.models import Website
+from pen_test.business.entity import WebsiteEntity
 from pen_test.business.interfaces.iwebsite_repository import IWebsiteRepository
 
 
@@ -30,6 +31,20 @@ class WebsiteRepository(IWebsiteRepository):
         self._db.session.add(instance)
         self._db.session.commit()
         return self._factory_website(instance)
+
+    def update(self, website: WebsiteEntity) -> WebsiteEntity:
+        instance = self._model.query.filter(id=website.id).first()
+        instance.url = website.url
+        instance.name = website.name
+
+        self._db.session.commit()
+
+        return self._factory_website(instance)
+
+    def list(self) -> List[WebsiteEntity]:
+        instances = self._model.query.order_by(desc(self._model.created_date)).all()
+
+        return [self._factory_website(instance) for instance in instances]
 
 
     @staticmethod

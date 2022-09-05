@@ -32,6 +32,10 @@ class AnomaliesRepository(IAnomaliesRepository):
         instance = self._model.query.filter_by(website_id=website).first()
         return self._factory_anomalies_entity(instance)
 
+    def filter_list_by_website(self, website: UUID) -> List[IAnomalies]:
+        instances = self._model.query.filter_by(website_id=website).all()
+        return [self._factory_anomalies_entity(instance) for instance in instances]
+
     def list(self) -> List[AnomaliesEntity]:
         instances = self._model.query.order_by(desc(self._model.created_date)).all()
 
