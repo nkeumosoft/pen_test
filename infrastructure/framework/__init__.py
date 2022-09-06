@@ -4,7 +4,7 @@ from flask import Flask
 from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from flask_bootstrap import Bootstrap
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -18,11 +18,11 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
     app.config['SECRET_KEY'] = 'secret'
-
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///wordcount"
     # init data base
     db.init_app(app)
     migrate.init_app(app, db)
-
+    Bootstrap(app)
     # init admin
     from infrastructure.framework.views import Anomalies, Vulnerabilities, MyHomeView
     from infrastructure.framework.views import Home
@@ -42,3 +42,4 @@ def create_app(script_info=None):
 
     app.shell_context_processor({'app': app, 'db': db})
     return app
+
