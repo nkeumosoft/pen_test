@@ -90,14 +90,14 @@ class Home(BaseView):
         if form.validate_on_submit():
             website_repo = WebsiteRepository(db, Website)
 
-            website_find = website_repo.find_by_url(form.get("url"))
+            website_find = website_repo.find_by_url(form.date.get("url"))
             if not website_find:
-                website_find = WebsiteEntity(url=form.get("url"), name=form.get("name"))
+                website_find = WebsiteEntity(url=form.date.get("url"), name=form.date.get("name"))
 
                 create_website(website_find)
             else:
-                website_find.url = form.get("url")
-                website_find.name = form.get("name")
+                website_find.url = form.date.get("url")
+                website_find.name = form.data.get("name")
                 update_website(website_find)
 
             return redirect(url_for('admin.index'))
