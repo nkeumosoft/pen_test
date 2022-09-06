@@ -121,7 +121,7 @@ class Vulnerabilities(BaseView):
         vulnerabilities = pent_result.list_vul()
 
         return self.render('vulnerabilities_result.html', form=form, name="Vulnerabilities",
-                           vulnerabilitiy=vulnerabilities)
+                           vulnerabilities=vulnerabilities)
 
     @expose('/<key>')
     def details(self, key):
