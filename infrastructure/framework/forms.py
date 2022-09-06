@@ -7,3 +7,7 @@ class WebsiteForm(FlaskForm):
     name = StringField('Name', description='Website name')
     submit = SubmitField('Create')
 
+
+class SearchForm(FlaskForm):
+    url = StringField('find your website ', validators=[validators.DataRequired()])
+    submit = SubmitField('Submit')

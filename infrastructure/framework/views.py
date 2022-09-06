@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 
@@ -7,7 +8,7 @@ from flask_admin import AdminIndexView, BaseView, expose
 from flask_paginate import Pagination, get_page_parameter
 
 from infrastructure.framework import db
-from infrastructure.framework.forms import WebsiteForm
+from infrastructure.framework.forms import SearchForm, WebsiteForm
 from infrastructure.framework.models import PenTestVulnerability, PentestAnomalies, Website
 from infrastructure.repository.anomalies_repos import AnomaliesRepository
 from infrastructure.repository.vulnerability_repos import VulnerabilityRepository
@@ -43,9 +44,11 @@ class MyHomeView(AdminIndexView):
         list_of_website = website_repo.list()
         form = request.form.getlist('checked')
         if form:
-            thread_number = int(len(form)/2)
+            thread_number = 3
+            logging.error(thread_number)
+            logging.error(form)
+            scan_list_website(form)
 
-            scan_list_website(form, thread_number)
             return redirect(url_for('admin.index'))
 
         page = request.args.get(get_page_parameter(), type=int, default=1)
@@ -80,9 +83,6 @@ class MyHomeView(AdminIndexView):
         )
 
 
-
-
-
 class Home(BaseView):
     @expose('/', methods=['GET', 'POST'])
     def index(self):
@@ -90,15 +90,11 @@ class Home(BaseView):
         if form.validate_on_submit():
             website_repo = WebsiteRepository(db, Website)
 
-            website_find = website_repo.find_by_url(form.date.get("url"))
+            website_find = website_repo.find_by_url(form.data.get("url"))
             if not website_find:
-                website_find = WebsiteEntity(url=form.date.get("url"), name=form.date.get("name"))
+                website_find = WebsiteEntity(url=form.data.get("url"), name=form.data.get("name"))
 
                 create_website(website_find)
-            else:
-                website_find.url = form.date.get("url")
-                website_find.name = form.data.get("name")
-                update_website(website_find)
 
             return redirect(url_for('admin.index'))
 
@@ -113,6 +109,7 @@ class Home(BaseView):
 class Vulnerabilities(BaseView):
     @expose('/')
     def index(self):
+        form = SearchForm()
         vul_repo = VulnerabilityRepository(db=db, model=PenTestVulnerability)
         anomalies_repo = AnomaliesRepository(db=db, model=PentestAnomalies)
 
@@ -123,8 +120,8 @@ class Vulnerabilities(BaseView):
         )
         vulnerabilities = pent_result.list_vul()
 
-        return self.render('vulnerabilities_result.html', request=request, name="Vulnerabilities",
-                           vulnerabilities=vulnerabilities)
+        return self.render('vulnerabilities_result.html', form=form, name="Vulnerabilities",
+                           vulnerabilitiy=vulnerabilities)
 
     @expose('/<key>')
     def details(self, key):
@@ -145,26 +142,38 @@ class Vulnerabilities(BaseView):
 
     @expose('/search_vul', methods=['POST'])
     def search_vul(self):
-        vul_repo = VulnerabilityRepository(db=db, model=PenTestVulnerability)
+        form = SearchForm()
+        vulnerabilities = []
+        logging.error(form.validate_on_submit())
+        if form.validate_on_submit():
+            logging.error(f'okay {request}')
+            vul_repo = VulnerabilityRepository(db=db, model=PenTestVulnerability)
 
-        url = request.form.get("search")
-        website_repo = WebsiteRepository(db, Website)
+            url = form.data.get("url")
+            website_repo = WebsiteRepository(db, Website)
 
-        if url:
-            website = website_repo.find(url)
-            if website:
-                vulnerabilities = vul_repo.filter_list_by_website(website.id)
-        logging.error(vulnerabilities)
-        return self.render('vulnerabilities_result.html',
-                           request=request,
-                           name="Vulnerabilities",
-                           vulnerabilities=vulnerabilities)
+            if url:
+                website = website_repo.find_by_url(url)
+
+                if website:
+                    vulnerabilities = vul_repo.filter_list_by_website(website.id)
+
+
+        return self.render(
+            'vulnerabilities_result.html',
+            name="Vulnerabilities",
+            form=form,
+            vulnerabilities=vulnerabilities
+        )
+
 
 
 class Anomalies(BaseView):
 
     @expose('/')
     def index(self):
+        form = SearchForm()
+        anomalies = []
         vul_repo = VulnerabilityRepository(db=db,
                                            model=PenTestVulnerability)
         anomalies_repo = AnomaliesRepository(db=db,
@@ -177,7 +186,7 @@ class Anomalies(BaseView):
         )
         anomalies = pent_result.list_anomaly()
 
-        return self.render('anomalies_result.html', request=request, name="anomalies",
+        return self.render('anomalies_result.html', form=form, name="anomalies",
                            Anomalies=anomalies)
 
     @expose('/<key>')
@@ -201,16 +210,19 @@ class Anomalies(BaseView):
 
     @expose('/search_anomalies', methods=['POST'])
     def search_anomalies(self):
-
-        anomalies_repo = AnomaliesRepository(db=db, model=PentestAnomalies)
-        url = request.form.get("search")
-        website_repo = WebsiteRepository(db, Website)
+        form = SearchForm()
         anomalies = []
-        if url:
-            website = website_repo.find(url)
-            if website:
-                anomalies = anomalies_repo.filter_list_by_website(website.id)
+        if form.validate_on_submit():
+            logging.error(f'okay {request}')
+            anomalies_repo = AnomaliesRepository(db=db, model=PentestAnomalies)
+            url = form.data.get("url")
+            website_repo = WebsiteRepository(db, Website)
+
+            if url:
+                website = website_repo.find_by_url(url)
+                logging.error(website)
+                if website:
+                    anomalies = anomalies_repo.filter_list_by_website(website.id)
+            logging.error(anomalies)
         logging.error(anomalies)
-        return self.render('anomalies_result.html', request=request, name="Anomalies", anomalies=anomalies)
-
-
+        return self.render('anomalies_result.html', form=form, name="Anomalies", Anomalies=anomalies)
