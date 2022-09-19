@@ -163,7 +163,7 @@ class Vulnerabilities(BaseView):
             'vulnerabilities_result.html',
             name="Vulnerabilities",
             form=form,
-            vulnerabilities=vulnerabilities
+            Vulnerabilities=vulnerabilities
         )
 
 
