@@ -3,6 +3,8 @@ from uuid import UUID, uuid4
 from dataclasses import dataclass, field
 
 from pen_test.business.interfaces.ianomalies import IAnomalies
+from pen_test.business.interfaces.iscaninfo import INmapScanInfo
+from pen_test.business.interfaces.iscanresult import INmapScanResult
 from pen_test.business.interfaces.ivulnerability import IVulnerability
 from pen_test.business.interfaces.iwebsite import IWebsite
 
@@ -12,15 +14,17 @@ class WebsiteEntity(IWebsite):
     url: str
     name: str = ''
     id: UUID = field(default=uuid4())
+    host_ip: str = ''
 
 
     @classmethod
-    def factory(cls, name: str, url: str, id: Optional[UUID] = None) -> IWebsite:
+    def factory(cls, name: str, url: str, host_ip, id: Optional[UUID] = None) -> IWebsite:
         uuid = id or uuid4()
         obj = cls(
             id=uuid,
             name=name,
-            url=url
+            url=url,
+            host_ip=host_ip
         )
         return obj
 
@@ -75,3 +79,76 @@ class VulnerabilityEntity(IVulnerability):
             attack_details=attack_details
         )
         return vul
+
+
+@dataclass(frozen=True)
+class NmapScanResultEntity(INmapScanResult):
+
+    scan_id:UUID
+    protocol: str
+    port: str
+    name: str
+    state: str
+    product: str
+    extra_info: str
+    reason: str
+    version: int
+    conf: int
+    cpe: int
+    id: UUID = field(default=uuid4())
+
+    @classmethod
+    def factory(
+            cls,
+
+            scan_id:UUID,
+            protocol: str,
+            port: str,
+            name: str,
+            state: str,
+            product: str,
+            extra_info: str,
+            reason: str,
+            version: int,
+            conf: int,
+            cpe: int,
+            uuid: Optional[UUID] = None
+
+    ) -> INmapScanResult:
+        uuid = uuid or uuid4()
+        nmap_scan = cls(
+            id=uuid,
+            scan_id=scan_id,
+            protocol=protocol,
+            port=port,
+            name=name,
+            state=state,
+            product=product,
+            extra_info=extra_info,
+            reason=reason,
+            version=version,
+            conf=conf,
+            cpe=cpe
+        )
+        return nmap_scan
+
+
+@dataclass
+class NmapScanInfoEntity(INmapScanInfo):
+    website_id: UUID
+    arguments: str
+    ports: str
+    id: UUID = field(default=uuid4())
+
+    @classmethod
+    def factory(
+            cls, website_id: UUID, arguments: str, ports: str, uuid: Optional[UUID] = None
+    ) -> INmapScanInfo:
+        uuid = uuid or uuid4()
+        scan_info = cls(
+            id=uuid,
+            website_id=website_id,
+            arguments=arguments,
+            ports=ports)
+
+        return scan_info

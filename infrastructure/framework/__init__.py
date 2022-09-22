@@ -5,6 +5,8 @@ from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
+from flask import redirect, url_for
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -24,8 +26,9 @@ def create_app(script_info=None):
     migrate.init_app(app, db)
     Bootstrap(app)
     # init admin
-    from infrastructure.framework.views import Anomalies, Vulnerabilities, MyHomeView
+    from infrastructure.framework.views import Anomalies, Vulnerabilities, MyHomeView, NmapScanView
     from infrastructure.framework.views import Home
+
     admin = Admin(
         app,
         name='Penetration Testing',
@@ -37,6 +40,11 @@ def create_app(script_info=None):
     # admin.add_view(SearchView())
     admin.add_view(Anomalies())
     admin.add_view(Vulnerabilities())
+    admin.add_view(NmapScanView(name="Nmap scan"))
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('admin.index'))
 
     app.run()
 

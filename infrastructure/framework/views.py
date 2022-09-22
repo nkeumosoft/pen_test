@@ -1,21 +1,19 @@
-import asyncio
-import json
 import logging
+import socket
 
 from flask import redirect, request, url_for
-
 from flask_admin import AdminIndexView, BaseView, expose
 from flask_paginate import Pagination, get_page_parameter
 
 from infrastructure.framework import db
-from infrastructure.framework.forms import SearchForm, WebsiteForm
+from infrastructure.framework.forms import NmapScanForm, SearchForm, WebsiteForm
 from infrastructure.framework.models import PenTestVulnerability, PentestAnomalies, Website
 from infrastructure.repository.anomalies_repos import AnomaliesRepository
 from infrastructure.repository.vulnerability_repos import VulnerabilityRepository
 from infrastructure.repository.website_repository import WebsiteRepository
 from pen_test.business.entity import WebsiteEntity
-from pen_test.business.use_cases.crud_website import create_website, update_website
-from pen_test.business.use_cases.pentest import PentTestRun
+from pen_test.business.use_cases.crud_website import create_website
+from pen_test.business.use_cases.nmap_scan_port import NmapScanPort
 from pen_test.business.use_cases.pentest_result import PenTestResult
 from pen_test.business.use_cases.pentestresultdetail import launch_pentest, scan_list_website
 
@@ -167,7 +165,6 @@ class Vulnerabilities(BaseView):
         )
 
 
-
 class Anomalies(BaseView):
 
     @expose('/')
@@ -226,3 +223,30 @@ class Anomalies(BaseView):
             logging.error(anomalies)
         logging.error(anomalies)
         return self.render('anomalies_result.html', form=form, name="Anomalies", Anomalies=anomalies)
+
+
+class NmapScanView(BaseView):
+
+    @expose('/', methods=['GET', 'POST'])
+    def index(self):
+        form = NmapScanForm()
+
+        if form.validate_on_submit():
+
+            url = form.data.get("host")
+            start_port = form.data.get("start_port")
+            end_port = form.data.get("end_port")
+            logging.warning(f"{url}: {start_port} {end_port}")
+
+            try:
+                ip = socket.gethostbyname(url)
+                logging.warning(ip)
+                nmap_scaner = NmapScanPort(host=ip, port=f"{str(start_port)}-{str(end_port)}")
+                nmap_scaner.async_scan()
+                return redirect(url_for('nmapscanview.index'))
+            except socket.gaierror:
+                logging.error('Name or service not known')
+                nmap_scaner = NmapScanPort(host=url, port=f"{str(start_port)}-{str(end_port)}")
+
+            nmap_scaner.async_scan()
+        return self.render('nmap_scan.html', form=form)

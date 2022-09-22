@@ -27,7 +27,11 @@ class WebsiteRepository(IWebsiteRepository):
             return self._factory_website(instance)
 
     def create(self, website: WebsiteEntity) -> WebsiteEntity:
-        instance = self._model(id=website.id, name=website.name, url=website.url)
+        instance = self._model(
+            id=website.id,
+            name=website.name,
+            url=website.url,
+            host_ip=website.host_ip)
         self._db.session.add(instance)
         self._db.session.commit()
         return self._factory_website(instance)
@@ -36,6 +40,7 @@ class WebsiteRepository(IWebsiteRepository):
         instance = self._model.query.filter(id=website.id).first()
         instance.url = website.url
         instance.name = website.name
+        instance.host_ip = website.host_ip
 
         self._db.session.commit()
 
@@ -53,5 +58,6 @@ class WebsiteRepository(IWebsiteRepository):
             id=instance.id,
             name=instance.name,
             url=instance.url,
+            host_ip=instance.host_ip
 
         )
