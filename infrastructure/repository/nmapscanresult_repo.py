@@ -75,7 +75,7 @@ class NmapResultRepository(INmapScanResultRepository):
     @staticmethod
     def _factory_nmap_result(instance: NmapResult) -> NmapScanResultEntity:
         return NmapScanResultEntity.factory(
-            id=instance.uuid,
+            uuid=instance.id,
             scan_id=instance.scan_id,
             protocol=instance.protocol,
             port=instance.port,

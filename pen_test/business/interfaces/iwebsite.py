@@ -7,6 +7,6 @@ class IWebsite(metaclass=abc.ABCMeta):
 
     @classmethod
     def factory(
-            cls, name: str, url: str, host_ip:str, uuid: Optional[UUID] = None
+            cls, name: str, url: str,  uuid: Optional[UUID] = None
     ) -> 'IWebsite':
         ...

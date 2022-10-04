@@ -26,14 +26,16 @@ class NmapScanInfoRepository(INmapScanResultRepository):
             return self._factory_nmap_info(instance)
 
     def create(self, nmap_website: NmapScanInfoEntity) -> NmapScanInfoEntity:
-        instance = self._model(
-            id=nmap_website.uuid,
-            website_id=nmap_website.website_id,
-            arguments=nmap_website.arguments,
-            ports=nmap_website.ports,
-        )
-        self._db.session.add(instance)
-        self._db.session.commit()
+        instance = self.find(nmap_website.id)
+        if not instance:
+            instance = self._model(
+                id=nmap_website.id,
+                website_id=nmap_website.website_id,
+                arguments=nmap_website.arguments,
+                ports=nmap_website.ports,
+            )
+            self._db.session.add(instance)
+            self._db.session.commit()
         return self._factory_nmap_info(instance)
 
     def update(self, nmap_website: NmapScanInfoEntity) -> NmapScanInfoEntity:
@@ -56,7 +58,7 @@ class NmapScanInfoRepository(INmapScanResultRepository):
     @staticmethod
     def _factory_nmap_info(instance: NmapScanInfo) -> NmapScanInfoEntity:
         return NmapScanInfoEntity.factory(
-            id=instance.uuid,
+            uuid=instance.id,
             website_id=instance.website_id,
             arguments=instance.arguments,
             ports=instance.ports,

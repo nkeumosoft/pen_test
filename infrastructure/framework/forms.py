@@ -17,7 +17,7 @@ class SearchForm(FlaskForm):
 class NmapScanForm(FlaskForm):
 
     host = StringField('Check Your Host', validators=[validators.DataRequired(), Length(min=10, max=255)])
-    start_port = IntegerField(default=1)
-    end_port = IntegerField(default=65535)
+    start_port = IntegerField()
+    end_port = IntegerField()
 
-    submit = SubmitField('Submit')
+    submit = SubmitField('Scan')

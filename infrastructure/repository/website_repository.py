@@ -30,8 +30,7 @@ class WebsiteRepository(IWebsiteRepository):
         instance = self._model(
             id=website.id,
             name=website.name,
-            url=website.url,
-            host_ip=website.host_ip)
+            url=website.url)
         self._db.session.add(instance)
         self._db.session.commit()
         return self._factory_website(instance)
@@ -57,7 +56,6 @@ class WebsiteRepository(IWebsiteRepository):
         return WebsiteEntity.factory(
             id=instance.id,
             name=instance.name,
-            url=instance.url,
-            host_ip=instance.host_ip
+            url=instance.url
 
         )

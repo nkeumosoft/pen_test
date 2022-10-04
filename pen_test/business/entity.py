@@ -14,17 +14,16 @@ class WebsiteEntity(IWebsite):
     url: str
     name: str = ''
     id: UUID = field(default=uuid4())
-    host_ip: str = ''
+
 
 
     @classmethod
-    def factory(cls, name: str, url: str, host_ip, id: Optional[UUID] = None) -> IWebsite:
+    def factory(cls, name: str, url: str, id: Optional[UUID] = None) -> IWebsite:
         uuid = id or uuid4()
         obj = cls(
             id=uuid,
             name=name,
-            url=url,
-            host_ip=host_ip
+            url=url
         )
         return obj
 
@@ -84,7 +83,7 @@ class VulnerabilityEntity(IVulnerability):
 @dataclass(frozen=True)
 class NmapScanResultEntity(INmapScanResult):
 
-    scan_id:UUID
+    scan_id: UUID
     protocol: str
     port: str
     name: str
@@ -92,16 +91,16 @@ class NmapScanResultEntity(INmapScanResult):
     product: str
     extra_info: str
     reason: str
-    version: int
-    conf: int
-    cpe: int
+    version: str
+    conf: str
+    cpe: str
     id: UUID = field(default=uuid4())
 
     @classmethod
     def factory(
             cls,
 
-            scan_id:UUID,
+            scan_id: UUID,
             protocol: str,
             port: str,
             name: str,
@@ -109,9 +108,9 @@ class NmapScanResultEntity(INmapScanResult):
             product: str,
             extra_info: str,
             reason: str,
-            version: int,
-            conf: int,
-            cpe: int,
+            version: str,
+            conf: str,
+            cpe: str,
             uuid: Optional[UUID] = None
 
     ) -> INmapScanResult:
@@ -138,7 +137,14 @@ class NmapScanInfoEntity(INmapScanInfo):
     website_id: UUID
     arguments: str
     ports: str
+
     id: UUID = field(default=uuid4())
+
+    def __init__(self, website_id, arguments, ports, id=uuid4()):
+        self.id = id
+        self.website_id = website_id
+        self.arguments = arguments
+        self.ports = ports
 
     @classmethod
     def factory(

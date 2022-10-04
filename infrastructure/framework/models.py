@@ -12,14 +12,13 @@ class Website(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True)
     name = db.Column(db.String(50), nullable=True)
     url = db.Column(db.String(254), nullable=False)
-    host_ip = db.Column(db.String(255), nullable=True, default='')
     created_date = db.Column(db.DateTime, default=datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 
-    def __init__(self, id, name, url, ip):
+    def __init__(self, id, name, url):
         self.id = id
         self.name = name
         self.url = url
-        self.host_ip = ip
+
 
 
 class PenTestVulnerability(db.Model):
@@ -66,7 +65,8 @@ class NmapScanInfo(db.Model):
     arguments = db.Column(db.String(255), nullable=True)
     created_date = db.Column(db.DateTime, default=datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
 
-    def __init__(self, website_id,  arguments: str, ports: str):
+    def __init__(self, id, website_id,  arguments: str, ports: str):
+        self.id = id
         self.website_id = website_id
         self.arguments = arguments
         self.ports = ports
@@ -76,7 +76,7 @@ class NmapResult(db.Model):
     __tablename__ = 'nmap_result'
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    scan_id = db.Column(UUID(as_uuid=True), db.ForeignKey('nmapscaninfo.id'), index=True, nullable=False)
+    scan_id = db.Column(UUID(as_uuid=True), db.ForeignKey('nmap_scan_info.id'), index=True, nullable=False)
     # hostname_type = db.Column(db.String(25), nullable=True)
     protocol = db.Column(db.String(25), nullable=True)
     # host_ip = db.Column(db.String(255), nullable=True)
@@ -87,7 +87,7 @@ class NmapResult(db.Model):
     extra_info = db.Column(db.String(255), nullable=True)
     reason = db.Column(db.String(255), nullable=True)
     version = db.Column(db.String(255), nullable=True)
-    conf = db.Column(db.Integer, nullable=True)
+    conf = db.Column(db.String(255), nullable=True)
     cpe = db.Column(db.String(255), nullable=True)
 
     created_date = db.Column(db.DateTime, default=datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
@@ -101,8 +101,8 @@ class NmapResult(db.Model):
                  product: str,
                  extra_info: str,
                  reason: str,
-                 version: int,
-                 conf: int, cpe):
+                 version: str,
+                 conf: str, cpe):
         self.scan_id = scan_id
         self.protocol = protocol
         self.port = port
