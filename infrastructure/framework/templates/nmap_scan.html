@@ -173,7 +173,7 @@
 
     <div class="container-fluid">
 
-        <form method="post">
+        <form method="post" name="nmap_scan" onsubmit="return check_form()">
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
@@ -235,6 +235,10 @@
                                             <div id="portscan-scanoption" class="list-group-item">
                                                 <input type="radio" value="connect" id="connect" name="scan_type" checked="">
                                                 <label for="connect">connect()</label>
+                                            </div>
+                                             <div id="portscan-scanoption" class="list-group-item">
+                                                <input type="radio" value="udp_scan" id="syn" name="scan_type">
+                                                <label for="syn">UDP Scan</label>
                                             </div>
                                             <div id="portscan-scanoption" class="list-group-item">
                                                 <input type="radio" value="syn" id="syn" name="scan_type">
@@ -422,5 +426,21 @@
                 x.style.display = "none";
               }
         }
+
+        function check_form() {
+
+
+                let what = document.form.nmap_scan.website_name;
+                alert(what);
+
+
+                if (what.selectedIndex == -1) {
+                    alert("Please enter your course.");
+                    what.focus();
+                    return false;
+                }
+
+                return true;
+            }
     </script>
 {% endblock %}

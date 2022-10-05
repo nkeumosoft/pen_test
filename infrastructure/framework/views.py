@@ -235,6 +235,7 @@ class NmapScanView(BaseView):
         form = request.form
         list_of_website = website_repo.list()
         ping_options = {
+            "no_ping": "none",
             "TCP": "tcp_ping",
             "ICMP": "icmp",
             "UDP Ping": "udp_ping",
@@ -242,11 +243,9 @@ class NmapScanView(BaseView):
         }
         context = {
             'Fragment Packets': 'frag_pack',
-            'Enable IPv6 scanning': 'ip6',
             'Regular Scan': 'reg_scan',
             'Enable OS detection': 'os_detect',
-            'UDP Scan': 'udp_scan',
-            'Spoof source address': 'spoof_source',
+
         }
 
         if request.method == "POST":
@@ -267,22 +266,24 @@ class NmapScanView(BaseView):
                     start_port = form.get('start_port')
                     end_port = form.get('end_port')
                     port = check_port(start_port, end_port)
+                    logging.warning(normal_scan)
                     if 'no' in normal_scan:
                         scan_type = form.get('scan_type')
                         ping_type = form.get('ping_type')
+                        logging.warning(ping_type)
                         ping_type = get_ping_type(ping_type)
 
                         website_args = form.getlist('g_options')
                         scan_type = get_scan_type(scan_type)
 
                         general_options = get_general_options(website_args)
-                        args = f'{scan_type}  {general_options}  {ping_type}'
+                        args = f'{scan_type} 3  {general_options} 1 {ping_type}'
 
-                        logging.warning(port)
+                        logging.warning(args)
                         nmap_scan_infos = NmapScanInfoEntity(website_id=website.id, arguments=args, ports=port)
                         nmap_scan_infos = create_nmap_scan_info(nmap_scan_infos)
                         nmap_scan_infos = nmap_scan_infos
-
+                        logging.warning(f'the last test to deploy {nmap_scan_infos}')
                     else:
                         args = get_scan_type("normal")
 
@@ -330,11 +331,9 @@ def get_general_options(options_name: List[str]) -> str:
     result_name: str = ''
     general_options = {
         'frag_pack': '-f ',
-        'ip6': '-6 ',
         'reg_scan': '-sV ',
         'os_detect': '-O -A ',
-        'udp_scan': '-sU ',
-        'spoof_source': "-S ",
+
     }
 
     for name in options_name:
@@ -347,11 +346,12 @@ def get_scan_type(scan_name: str) -> str:
     list_of_scan = {
         "normal": " ",
         "connect": "-sT ",
-        "syn": "-sS ",
+        "syn": "-sS",
         "null": "-sN ",
         "fin": "-sF ",
         "xmas": "-sX ",
         "ack": "-sA ",
+        'udp_scan': '-sU ',
         "init_scan": "-sY ",
         "window": "-sW ",
         "Maimon": "-sM ",
@@ -365,6 +365,8 @@ def get_ping_type(ping_name: str) -> str:
         "icmp": "-PE ",
         "udp_ping": "-PU ",
         "icmp_tcp": "-sF ",
+        "none": " "
 
     }
+
     return ping_options.get(ping_name)

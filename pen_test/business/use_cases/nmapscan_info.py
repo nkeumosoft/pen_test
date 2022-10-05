@@ -95,7 +95,7 @@ def scan_port_with_nmap(website: Website, nmap_scan_info: NmapScanInfoEntity) ->
                 "hostnames": host_name or {},
                 "vendor": vendor or {},
                 "status": status or {},
-                "port_found": port_list or [],
+                "port_found": port_list or {},
                 "command_line": result.get("nmap").get("command_line") or {},
                 "info_scan": result.get("nmap").get('scaninfo') or {},
                 "stats": result.get("nmap").get('scanstats') or {},
