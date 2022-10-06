@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, validators
+from wtforms import IntegerField, StringField, SubmitField, validators
+from wtforms.validators import Length
 
 
 class WebsiteForm(FlaskForm):
@@ -11,3 +12,12 @@ class WebsiteForm(FlaskForm):
 class SearchForm(FlaskForm):
     url = StringField('find your website ', validators=[validators.DataRequired()])
     submit = SubmitField('Submit')
+
+
+class NmapScanForm(FlaskForm):
+
+    host = StringField('Check Your Host', validators=[validators.DataRequired(), Length(min=10, max=255)])
+    start_port = IntegerField()
+    end_port = IntegerField()
+
+    submit = SubmitField('Scan')
