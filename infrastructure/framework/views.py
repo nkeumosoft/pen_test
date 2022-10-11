@@ -15,10 +15,10 @@ from infrastructure.repository.vulnerability_repos import VulnerabilityRepositor
 from infrastructure.repository.website_repository import WebsiteRepository
 from pen_test.business.entity import NmapScanInfoEntity, WebsiteEntity
 from pen_test.business.use_cases.crud_website import create_website
-from pen_test.business.use_cases.nmap_scan_result import get_list_namp, list_nmap_result
-from pen_test.business.use_cases.nmapscan_info import create_nmap_scan_info, nmap_scan, scan_port_with_nmap
+from pen_test.business.use_cases.nmapscan_info import create_nmap_scan_info, scan_port_with_nmap
 from pen_test.business.use_cases.pentest_result import PenTestResult
 from pen_test.business.use_cases.pentestresultdetail import launch_pentest, scan_list_website
+from pen_test.business.use_cases.sqlmap_scanner import sqlmap_launch_scan
 
 
 class MyHomeView(AdminIndexView):
@@ -231,6 +231,7 @@ class NmapScanView(BaseView):
 
     @expose('/', methods=['GET', 'POST'])
     def index(self):
+
         website_repo = WebsiteRepository(db, Website)
         form = request.form
         list_of_website = website_repo.list()
@@ -247,7 +248,7 @@ class NmapScanView(BaseView):
             'Enable OS detection': 'os_detect',
 
         }
-
+        form_error: str = None
         if request.method == "POST":
             logging.warning(form)
             website_checked = form.get('website_name')
@@ -302,7 +303,7 @@ class NmapScanView(BaseView):
                         arguments=context,
                         ping_options=ping_options,
                         stats=result_of_scan.get("stats"),
-                        cmd = result_of_scan.get("command_line"),
+                        cmd=result_of_scan.get("command_line"),
                         info_scan=result_of_scan.get("info_scan"),
                         port_found=result_of_scan.get("port_found"),
                         len_of_table=len(result_of_scan.get("port_found")),
@@ -310,11 +311,156 @@ class NmapScanView(BaseView):
                         status=result_of_scan.get("status"),
                         vendor=result_of_scan.get("vendor"))
 
+            form_error = "Please choise your website"
         return self.render(
             'nmap_scan.html', form=form,
             websites=list_of_website,
             arguments=context,
-            ping_options=ping_options)
+            ping_options=ping_options,
+            error_forms=form_error)
+
+
+class SqlMapScanView(BaseView):
+
+    @expose('/', methods=['GET', 'POST'])
+    def index(self):
+
+        website_repo = WebsiteRepository(db, Website)
+        form = request.form
+        list_of_website = website_repo.list()
+        key_options = ["Optimizations", "Injection", "Fingerprint",
+                       "Enumeration",  "Brute force", "Windows registry access"]
+        advance_options = \
+            [
+                {
+                    "Optimizations":
+                        {
+                            "-o": "Turn on all optimization switches",
+                            "--predict-output": "Predict common queries output",
+                            "--keep-alive": "Use persistent HTTP(s) connections",
+                            "--null-connection ": "Retrieve page length without actual HTTP response body"
+                        },
+                    'description': "These options can be used to optimize the performance"
+                },
+                {
+                    'description': "These options can be used to specify which parameters to test for, provide custom "
+                                   "injection payloads and optional tampering scripts",
+                    "Injection":
+                        {
+                            " --skip-static": "Skip testing parameters that not appear to be dynamic",
+                            "--invalid-bignum": "Use big numbers for invalidating values",
+                            "--invalid-logical": "Use logical operations for invalidating values",
+                            "--invalid-string": "Use random strings for invalidating values",
+                            "--no-cast": "Turn off payload casting mechanism",
+                            "--no-escape": "Turn off string escaping mechanism",
+                        }
+                },
+                {
+                    'description': "",
+                    "Fingerprint":
+                        {
+                            "--fingerprint": "   Perform an extensive DBMS version fingerprint",
+
+                        }
+                },
+                #   Detection:
+                #     These options can be used to customize the detection phase
+                #
+                #     --level=LEVEL       Level of tests to perform (1-5, default 1)
+                #     --risk=RISK         Risk of tests to perform (1-3, default 1)
+
+                {
+                    'description': "These options can be used to enumerate the back-end database"
+                                   "management system information, structure and data contained in the  tables",
+                    "Enumeration":
+                        {
+                            "--fingerprint": "   Perform an extensive DBMS version fingerprint",
+                            "--all ": "Retrieve everything",
+                            "--banner": " Retrieve DBMS banner",
+                            "--current-user": "Retrieve DBMS current user",
+                            "--current-db": "Retrieve DBMS current database",
+                            "--hostname ": "Retrieve DBMS server hostname",
+                            "--is-dba ": " Detect if the DBMS current user is DBA",
+                            "--users ": " Enumerate DBMS users",
+                            "--passwords": "Enumerate DBMS users password hashes",
+                            "--privileges": "Enumerate DBMS users privileges",
+                            "--roles  ": "Enumerate DBMS users roles",
+                            "--dbs  ": "Enumerate DBMS databases",
+                            "--tables": "Enumerate DBMS database tables",
+                            "--columns": "Enumerate DBMS database table columns",
+                            "--schema  ": " Enumerate DBMS schema",
+                            "--count    ": "Retrieve number of entries for table(s)",
+                            "--dump      ": "Dump DBMS database table entries",
+                            "--dump-all   ": "Dump all DBMS databases tables entries",
+                            "--search      ": "Search column(s), table(s) and/or database name(s)",
+                            "--comments   ": "      Check for DBMS comments during enumeration",
+                            "--statements  ": "Retrieve SQL statements being run on DBMS",
+
+                        }
+                },
+                #   :
+                #     
+                #
+                #    
+                {
+                    "description": "  These options can be used to run brute force checks",
+                    "Brute force": {
+                        "--common-tables": " Check existence of common tables",
+                        "--common-columns": "Check existence of common columns",
+                        "--common-files": " Check existence of common files"
+                    },
+                },
+                {
+                    "description": "These options can be used to access the back-end database management "
+                                    "system Windows registry",
+                    "Windows registry access": {
+                        " --reg-read": "Read a Windows registry key value",
+                        "--reg-add": "Write a Windows registry key value data",
+                        " --reg-del ": "  Delete a Windows registry key value"
+                    }
+                }
+            ]
+
+        form_error = None
+        if request.method == "POST":
+            logging.warning(form)
+            website_checked = form.get('website_name')
+            # logging.warning(website_checked)
+            if website_checked:
+
+                website_id = UUID(website_checked)
+                website = website_repo.find(website_id)
+                logging.error(website)
+                args: str = ""
+                if website:
+                    for key in key_options:
+                        forms_args = form.get(key) or ""
+                        args += f" {forms_args}"
+
+                    logging.warning(args)
+                    result_of_scan = sqlmap_launch_scan(website.url, args)
+                    len_of_result = len(result_of_scan)
+
+
+                    if not result_of_scan:
+                        result_of_scan = "No result  \n"
+                    logging.warning(result_of_scan.split("\n"))
+                    logging.warning(json.dumps(result_of_scan, indent=4, sort_keys=True))
+                    return self.render(
+                        'sqlmap_scan.html', form=form,
+                        websites=list_of_website,
+                        cmd=f"{website.url}  {args}",
+                        advance_options=advance_options,
+                        result_of_scan=result_of_scan.split("\n"),
+                        error_forms=form_error or None)
+            else:
+                form_error = "Please choise your website"
+
+        return self.render(
+            'sqlmap_scan.html', form=form,
+            websites=list_of_website,
+            advance_options=advance_options,
+            error_forms=form_error or None)
 
 
 def check_port(start_port=None, end_port=None) -> str:
@@ -337,7 +483,7 @@ def get_general_options(options_name: List[str]) -> str:
     }
 
     for name in options_name:
-        result_name +='' + general_options.get(name)
+        result_name += '' + general_options.get(name)
 
     return result_name
 

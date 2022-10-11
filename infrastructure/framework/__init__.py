@@ -27,13 +27,13 @@ def create_app(script_info=None):
     Bootstrap(app)
     # init admin
     from infrastructure.framework.views import Anomalies, Vulnerabilities, MyHomeView, NmapScanView
-    from infrastructure.framework.views import Home
+    from infrastructure.framework.views import Home, SqlMapScanView
 
     admin = Admin(
         app,
         name='Penetration Testing',
         template_mode='bootstrap4',
-        index_view=MyHomeView(url='/admin', endpoint='admin', name='Scan'))
+        index_view=MyHomeView(url='/admin', endpoint='admin', name='Wapiti Scan'))
     # Add administrative views here
 
     admin.add_view(Home(name='Create Website'))
@@ -41,6 +41,7 @@ def create_app(script_info=None):
     admin.add_view(Anomalies())
     admin.add_view(Vulnerabilities())
     admin.add_view(NmapScanView(name="Nmap scan"))
+    admin.add_view(SqlMapScanView(name="SqlMap scan"))
 
     @app.route('/')
     def index():
