@@ -27,7 +27,7 @@ def create_app(script_info=None):
     Bootstrap(app)
     # init admin
     from infrastructure.framework.views import Anomalies, Vulnerabilities, MyHomeView, NmapScanView
-    from infrastructure.framework.views import Home, SqlMapScanView
+    from infrastructure.framework.views import Home, SqlMapScanView, NcrackScanView
 
     admin = Admin(
         app,
@@ -42,6 +42,7 @@ def create_app(script_info=None):
     admin.add_view(Vulnerabilities())
     admin.add_view(NmapScanView(name="Nmap scan"))
     admin.add_view(SqlMapScanView(name="SqlMap scan"))
+    admin.add_view(NcrackScanView(name="Ncrack scan"))
 
     @app.route('/')
     def index():

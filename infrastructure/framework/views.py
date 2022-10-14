@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import uuid
 from typing import List
 from uuid import UUID
 
@@ -8,6 +10,7 @@ from flask_admin import AdminIndexView, BaseView, expose
 from flask_paginate import Pagination, get_page_parameter
 
 from infrastructure.framework import db
+from infrastructure.framework.config import BaseConfig
 from infrastructure.framework.forms import SearchForm, WebsiteForm
 from infrastructure.framework.models import PenTestVulnerability, PentestAnomalies, Website
 from infrastructure.repository.anomalies_repos import AnomaliesRepository
@@ -15,6 +18,7 @@ from infrastructure.repository.vulnerability_repos import VulnerabilityRepositor
 from infrastructure.repository.website_repository import WebsiteRepository
 from pen_test.business.entity import NmapScanInfoEntity, WebsiteEntity
 from pen_test.business.use_cases.crud_website import create_website
+from pen_test.business.use_cases.ncrack_scan import ncrack_launch_scan
 from pen_test.business.use_cases.nmapscan_info import create_nmap_scan_info, scan_port_with_nmap
 from pen_test.business.use_cases.pentest_result import PenTestResult
 from pen_test.business.use_cases.pentestresultdetail import launch_pentest, scan_list_website
@@ -329,7 +333,7 @@ class SqlMapScanView(BaseView):
         form = request.form
         list_of_website = website_repo.list()
         key_options = ["Optimizations", "Injection", "Fingerprint",
-                       "Enumeration",  "Brute force", "Windows registry access"]
+                       "Enumeration", "Brute force", "Windows registry access"]
         advance_options = \
             [
                 {
@@ -412,7 +416,7 @@ class SqlMapScanView(BaseView):
                 },
                 {
                     "description": "These options can be used to access the back-end database management "
-                                    "system Windows registry",
+                                   "system Windows registry",
                     "Windows registry access": {
                         " --reg-read": "Read a Windows registry key value",
                         "--reg-add": "Write a Windows registry key value data",
@@ -440,11 +444,14 @@ class SqlMapScanView(BaseView):
                     logging.warning(args)
                     result_of_scan = sqlmap_launch_scan(website.url, args)
                     len_of_result = len(result_of_scan)
-
-
+                    csv_file_location = "you can find results of scanning in multiple targets mode inside the CSV file"
+                    if csv_file_location in result_of_scan:
+                        csv_str = result_of_scan.find(csv_file_location)
+                        result_of_scan = result_of_scan[:csv_str]
                     if not result_of_scan:
                         result_of_scan = "No result  \n"
-                    logging.warning(result_of_scan.split("\n"))
+                    val = result_of_scan.split("\n")
+
                     logging.warning(json.dumps(result_of_scan, indent=4, sort_keys=True))
                     return self.render(
                         'sqlmap_scan.html', form=form,
@@ -516,3 +523,154 @@ def get_ping_type(ping_name: str) -> str:
     }
 
     return ping_options.get(ping_name)
+
+
+class NcrackScanView(BaseView):
+    key_options = ["Authentication", "MISC"]
+    advance_options = \
+        [
+            {
+
+                "Authentication": {
+
+                    "Iterate password list for each username. Default is opposite.": "--passwords-first",
+                    "Choose usernames and passwords in pairs.": "--pairwise",
+                }
+            },
+
+            {
+
+                "MISC": {
+
+                    "quit cracking service after one found credential": "-f",
+                    "Enable IPv6 cracking": "-6",
+                    "only list hosts and services": "--list",
+                },
+            }
+
+        ]
+
+    form_error = None
+
+    def get_list_of_website(self):
+        website_repo = WebsiteRepository(db, Website)
+        list_of_website = website_repo.list()
+        return list_of_website
+
+    @expose('/', methods=['GET', 'POST'])
+    def index(self):
+
+        return self.render(
+            'ncrack_scan.html',
+            websites=self.get_list_of_website(),
+            # advance_options=self.advance_options,
+            error_forms=self.form_error or None)
+
+    @expose('/', methods=['POST'])
+    def get_index(self):
+        logging.error(" dvdvfvfvfvf website_name ")
+        form = request.form
+        logging.warning(form)
+        website_checked = form.get('website_name')
+        username = form.get('username')
+        password = form.get('password')
+        if not username and not password:
+            self.form_error = "Please enter username and password"
+            return self.render(
+                'ncrack_scan.html',
+                websites=self.get_list_of_website(),
+                # advance_options=self.advance_options,
+                error_forms=self.form_error or None)
+
+        if website_checked:
+            website_repo = WebsiteRepository(db, Website)
+            website_id = UUID(website_checked)
+            website = website_repo.find(website_id)
+            logging.error(website)
+            args: str = ""
+            if website:
+                args_user = username if username else ""
+                args_pass = password if password else ""
+                logging.warning(args)
+                result_of_scan = ncrack_launch_scan(website.url, args_user, args_pass, "--user", "--pass")
+
+                return self.render(
+                    'ncrack_scan.html',
+                    websites=self.get_list_of_website(),
+                    result_of_scan=result_of_scan[0].split("\n"),
+                    error_during_scan=result_of_scan[1].split("\n"),
+                    error_forms=self.form_error or None)
+        else:
+            self.form_error = "Please choise your website"
+            return self.render(
+                'ncrack_scan.html',
+                websites=self.get_list_of_website(),
+                error_forms=self.form_error or None)
+
+    @expose('/okay', methods=['GET', 'POST'])
+    def up_load_file(self):
+        if request.method == "POST":
+            form = request.form
+            logging.warning(form)
+            website_checked = form.get('website_name')
+            if not request.files.get('username_file') and not request.files.get('password_file'):
+                self.form_error = 'No file part'
+                return self.render(
+                    'ncrack_scan.html',
+                    websites=self.get_list_of_website(),
+                    error_forms=self.form_error or None)
+
+            request_pass = request.files.get('password_file')
+            logging.info(request.files)
+            password_file = None if request.files.get('password_file').filename == "" else request_pass
+            request_user = request.files.get('username_file')
+            username_file = None if request.files.get('password_file').filename == "" else request_user
+
+            logging.info(username_file)
+            if not username_file and not password_file:
+                self.form_error = 'No selected file'
+                return redirect(request.url)
+            username_file_path = self.get_file(username_file)
+            password_file_path = self.get_file(password_file)
+            logging.warning(username_file_path)
+            logging.warning(password_file_path)
+            if website_checked:
+                website_repo = WebsiteRepository(db, Website)
+                website_id = UUID(website_checked)
+                website = website_repo.find(website_id)
+                logging.error(website)
+                args: str = ""
+                if website:
+                    result_of_scan = ncrack_launch_scan(
+                        website.url, username_file_path, password_file_path, "-U", "-P")
+
+                    return self.render(
+                        'ncrack_scan.html',
+                        websites=self.get_list_of_website(),
+                        result_of_scan=result_of_scan[0].split("\n"),
+                        error_during_scan=result_of_scan[1].split("\n"),
+                        error_forms=self.form_error or None)
+            else:
+
+                self.form_error = "Please choise your website"
+                return self.render(
+                    'ncrack_scan.html',
+                    websites=self.get_list_of_website(),
+                    error_forms=self.form_error or None)
+        return self.index()
+
+    def get_file(self, file):
+        logging.error(file)
+        original_filename = file.filename
+        extension = original_filename.rsplit('.', 1)[1].lower()
+        filename = str(uuid.uuid1()) + '.' + extension
+        file_path = os.path.join(BaseConfig.UPLOAD_FOLDER, filename)
+        if os.path.exists(BaseConfig.UPLOAD_FOLDER):
+            file.save(file_path)
+        else:
+            os.mkdir(BaseConfig.UPLOAD_FOLDER)
+            file.save(file_path)
+
+        logging.warning(filename)
+        logging.warning(file_path)
+        return file_path

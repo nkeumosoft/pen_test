@@ -14,10 +14,11 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-class NmapScanForm(FlaskForm):
+class NcrackScanForm(FlaskForm):
 
-    host = StringField('Check Your Host', validators=[validators.DataRequired(), Length(min=10, max=255)])
-    start_port = IntegerField()
-    end_port = IntegerField()
+    host = StringField('Check Your Host', validators=[validators.DataRequired(), Length(min=11, max=255)])
+    username = StringField('Enter the username', validators=[validators.DataRequired(), Length(min=2, max=255)])
+    password = StringField('Check a password', validators=[validators.DataRequired(), Length(min=2, max=255)])
 
     submit = SubmitField('Scan')
+

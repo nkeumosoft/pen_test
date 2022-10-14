@@ -197,14 +197,7 @@
                 <tr>
 
                     <td>
-                        <label for="cars">Find your Website:</label>
 
-                        <select id="cars" class="selectpicker" name="website_name" title="Choose Or Find Your Url..." data-live-search="true">
-                            {% for website in websites %}
-                                <option data-tokens="{{ website.id }}" value="{{ website.id }}">{{ website.url }}</option>
-                            {% endfor %}
-
-                        </select>
                     </td>
 
                     {# argument for scan nmap #}
