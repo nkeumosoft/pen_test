@@ -552,7 +552,8 @@ class NcrackScanView(BaseView):
 
     form_error = None
 
-    def get_list_of_website(self):
+    @staticmethod
+    def get_list_of_website():
         website_repo = WebsiteRepository(db, Website)
         list_of_website = website_repo.list()
         return list_of_website
@@ -574,13 +575,7 @@ class NcrackScanView(BaseView):
         website_checked = form.get('website_name')
         username = form.get('username')
         password = form.get('password')
-        if not username and not password:
-            self.form_error = "Please enter username and password"
-            return self.render(
-                'ncrack_scan.html',
-                websites=self.get_list_of_website(),
-                # advance_options=self.advance_options,
-                error_forms=self.form_error or None)
+
 
         if website_checked:
             website_repo = WebsiteRepository(db, Website)
@@ -589,11 +584,13 @@ class NcrackScanView(BaseView):
             logging.error(website)
             args: str = ""
             if website:
-                args_user = username if username else ""
-                args_pass = password if password else ""
-                logging.warning(args)
-                result_of_scan = ncrack_launch_scan(website.url, args_user, args_pass, "--user", "--pass")
 
+                path_username, args_user = (username, "--user") if username else ("", "")
+                path_password, args_pass = (username, "--pass") if password else ("", "")
+
+                # logging.warning(args)
+                result_of_scan = ncrack_launch_scan(website.url, path_username, path_password, args_user, args_pass)
+                # logging.warning(result_of_scan)
                 return self.render(
                     'ncrack_scan.html',
                     websites=self.get_list_of_website(),

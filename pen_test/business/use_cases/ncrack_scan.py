@@ -133,23 +133,29 @@ class NcrackScanner:
             user_args: str = "",
             timeout=0
     ) -> tuple:
-        if path_password == "" and path_username == "":
-            return "Please provide a file to a username and password file"
-        else:
-            h_args = shlex.split(url)
-            # user_args = "-U" if user_args == "" else user_args
-            # pass_args = "-P" if pass_args == "" else pass_args
-            logging.error('test')
-            logging.error(path_password)
-            logging.error(path_username)
 
-            args = (
-                    [self._ncrack_path, "-T5", "-vvvvv"]
+        h_args = shlex.split(url)
+        # user_args = "-U" if user_args == "" else user_args
+        # pass_args = "-P" if pass_args == "" else pass_args
+        logging.error('test')
+        logging.error(path_password)
+        logging.error(path_username)
+
+        args = (
+                [self._ncrack_path, "-T5"]
                     + [user_args, path_username]
                     + [pass_args, path_password]
-                    + h_args
-        )
 
+                    + h_args
+                    + ["-vvvvv"]
+        )
+        try:
+            for arg in args:
+                if '' in arg:
+                    logging.error(args.remove(""))
+
+        except ValueError:
+            pass
         logging.error(args)
         logging.info("Waiting for ncrack to finish to capture the result ...")
         result = subprocess.Popen(
@@ -159,7 +165,7 @@ class NcrackScanner:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        logging.warning("caputure_stdin")
+        # logging.warning("caputure_stdin")
         if timeout == 0:
             logging.warning("caputure_stdin")
             caputure_stdin = result.communicate()
@@ -173,7 +179,8 @@ class NcrackScanner:
                 result.kill()
                 raise NcrackScannerError("Timeout from ncrack process")
         ncrack_error = bytes.decode(ncrack_error)
-        logging.warning((self._ncrack_last_output, ncrack_error))
+        # logging.warning(self._ncrack_last_output)
+        # logging.warning(("bonjours le monde", self._ncrack_last_output))
 
         return self.analyse_ncrack_scan(ncrack_output=self._ncrack_last_output, ncrack_err=ncrack_error)
 
@@ -184,6 +191,14 @@ class NcrackScanner:
         # output_level = shlex.split(f"{level_of_output_msg} ")
         # -oN/-oX <file>: Output scan in normal and XML format, respectively, to the given filename.
         #   -oA <basename>: Output in the two major formats at once
+        try:
+            for arg in f_args:
+                if '' in arg:
+                    f_args.remove("")
+
+        except ValueError:
+            pass
+
         args = (
                 [self._ncrack_path, "-T5"]
                 + h_args
