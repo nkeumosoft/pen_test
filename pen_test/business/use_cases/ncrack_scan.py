@@ -139,10 +139,10 @@ class NcrackScanner:
             h_args = shlex.split(url)
             # user_args = "-U" if user_args == "" else user_args
             # pass_args = "-P" if pass_args == "" else pass_args
+            logging.error('test')
+            logging.error(path_password)
+            logging.error(path_username)
 
-
-            pass_args = "" if path_password == "" else "-P"
-            user_args = "" if path_username == "" else "-U"
             args = (
                     [self._ncrack_path, "-T5", "-vvvvv"]
                     + [user_args, path_username]

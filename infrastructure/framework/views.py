@@ -664,7 +664,8 @@ class NcrackScanView(BaseView):
         original_filename = file.filename
         extension = original_filename.rsplit('.', 1)[1].lower()
         filename = str(uuid.uuid1()) + '.' + extension
-        file_path = os.path.join(BaseConfig.UPLOAD_FOLDER, filename)
+        file_path = mkdir_file_path(BaseConfig.UPLOAD_FOLDER)
+        file_path = os.path.join(file_path, filename)
         if os.path.exists(BaseConfig.UPLOAD_FOLDER):
             file.save(file_path)
         else:
@@ -673,4 +674,12 @@ class NcrackScanView(BaseView):
 
         logging.warning(filename)
         logging.warning(file_path)
+        return file_path
+
+
+def mkdir_file_path(file_path):
+    if os.path.exists(file_path):
+        return file_path
+    else:
+        os.mkdir(file_path)
         return file_path
