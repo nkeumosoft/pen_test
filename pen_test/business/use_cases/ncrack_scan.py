@@ -174,6 +174,7 @@ class NcrackScanner:
                 raise NcrackScannerError("Timeout from ncrack process")
         ncrack_error = bytes.decode(ncrack_error)
         logging.warning((self._ncrack_last_output, ncrack_error))
+
         return self.analyse_ncrack_scan(ncrack_output=self._ncrack_last_output, ncrack_err=ncrack_error)
 
     def simple_scan(self, url="kali.tools/?p=816",  arguments=" ",  timeout=0) -> str:
