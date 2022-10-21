@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'files')
+
 
 # Defining base config
 class BaseConfig:
@@ -10,6 +12,7 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_ENABLED = False
     CSRF_ENABLED = True
+    UPLOAD_FOLDER = UPLOAD_FOLDER
 
 
 # defining dev config

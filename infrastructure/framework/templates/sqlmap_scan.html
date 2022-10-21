@@ -1,0 +1,345 @@
+{% extends 'admin/master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+
+{#    <link rel="stylesheet"#}
+{#          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">#}
+{##}
+{#    <!-- jQuery -->#}
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>#}
+{#    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>#}
+    <style>
+
+        .fakeScreen {
+          background-color: #151515;
+          box-sizing: border-box;
+          width: 100%;
+          margin: 0 auto;
+          padding: 20px;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
+
+        p {
+          position: relative;
+          text-align: left;
+          font-size: 1.25em;
+          font-family: monospace;
+          white-space: normal;
+          overflow: hidden;
+          width: 0;
+        }
+
+
+
+        .line1 {
+          color: #9CD9F0;
+
+            width: 100%;
+        }
+
+        .cursor1 {
+          -webkit-animation: blink 1s 2s 2 forwards;
+          -moz-animation: blink 1s 2s 2 forwards;
+          -o-animation: blink 1s 2s 2 forwards;
+          animation: blink 1s 2s 2 forwards;
+        }
+
+        .line2 {
+          color: #CDEE69;
+          -webkit-animation: type .5s 4.25s steps(20, end) forwards;
+          -moz-animation: type .5s 4.25s steps(20, end) forwards;
+          -o-animation: type .5s 4.25s steps(20, end) forwards;
+          animation: type .5s 4.25s steps(20, end) forwards;
+        max-width: 100%;
+        width: 100%;
+        }
+
+        .cursor2 {
+          -webkit-animation: blink 1s 5.25s 2 forwards;
+          -moz-animation: blink 1s 5.25s 2 forwards;
+          -o-animation: blink 1s 5.25s 2 forwards;
+          animation: blink 1s 5.25s 2 forwards;
+        }
+
+
+
+        @-webkit-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-moz-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-o-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-webkit-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @-moz-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @-o-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+    </style>
+{% endblock %}
+{% block body %}
+
+    <div class="container-fluid">
+
+        <form method="post" id="nmap_scan" >
+
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+
+                    <th scope="col" style="width:50%">name</th>
+                    <th scope="col">Scan argument</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% if error_forms %}
+                    <tr>
+                        <td colspan="4"><h1
+                                class="btn btn-danger justify-content-center text-center">{{ error_forms }}</h1>
+                        </td>
+                    </tr>
+                {% endif %}
+
+
+                <tr>
+
+                    <td>
+
+                    </td>
+
+                    {# argument for scan nmap #}
+
+
+                </tr>
+                <tr>
+                     <td colspan="4">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <label for="normal">Normal</label>
+                                <input type="radio" id="normal" onclick="toggle_hide()" value="yes" name="normalScan" checked="">
+                            </li>
+                            <li class="list-group-item">
+                                <label for="advance-scan">Advance</label>
+                                <input type="radio" id="advance-scan" onclick="toggle()" value="no" name="normalScan">
+                                <div id="myDIV" style="display: none">
+                                    <div id="portscan-advance" class="list-group">
+
+                                        <ul class="list-group">
+                                            {% for options in advance_options  %}
+                                                <div id="portscan-generaloptions" class="list-group">
+                                                    <div id="portscan-label">{{ options.pop("description") }}</div>
+                                                    {% for parent_key, suboption in options.items() %}
+                                                        {% for key, value in suboption.items() %}
+                                                            <li class="list-group-item">
+                                                                <input type="radio" name="{{ parent_key }}" value="{{ key }}"> {{ value }}
+                                                            </li>
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endfor %}
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="4">
+                        <button type="submit"  id="send" class="btn btn-success justify-content-center text-center">Run Scan
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+             <div class="error"></div>
+        </form>
+    {% if result_of_scan %}
+        <div class="result">
+            <div class="fakeScreen">
+                <p class="line1">$ {{ cmd }}<span class="cursor2">_</span></p>
+                {%  for value in result_of_scan %}
+                    <p class="line1" style="width: 100%">{{ value }}<span class="cursor1">_</span></p>
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+
+
+
+        {% endif %}
+
+    </div>
+    <!-- Latest compiled and minified JavaScript -->
+
+
+    <script>
+
+
+        function pagination(){
+
+
+        }
+        function toggle() {
+          let x = document.getElementById("myDIV");
+
+          if (x.style.display === "none") {
+            x.style.display = "block";
+
+          }
+        }
+
+        function toggle_hide(){
+            let x = document.getElementById("myDIV");
+              if (x.style.display === "block") {
+                x.style.display = "none";
+              }
+        }
+
+
+        form_send = document.querySelector('#send');
+        form_send.addEventListener('submit', (onsubmit) => {
+            console.log(form_send)
+            return false;
+        });
+
+        function check_form() {
+
+
+
+                console.log(form_send)
+                if (what.selectedIndex === -1) {
+                    alert("Please enter your course.");
+                    what.focus();
+                    return false;
+                }
+
+                return true;
+            }
+             $(document).ready(function () {
+
+
+            $('#data_list').after('<nav aria-label="..."><ul class="pagination" id="nav"></ul></nav>');
+                let row_to_display = 15;
+                let total_row = $('#data_list tbody tr').length;
+                let number_of_pages = total_row/row_to_display;
+                for(let i = 0;i < number_of_pages; i++) {
+                    let  page_index = i + 1;
+                    $('#nav').append('<li id="ul_nav" class="page-item"><a  class="page-link" href="#" rel="'+i+'">'+page_index+'</a></li>');
+                }
+                $('#data_list tbody tr').hide();
+                $('#data_list tbody tr').slice(0, row_to_display).show();
+                $('#ul_nav  a:first').addClass('active');
+                $('#ul_nav a').bind('click', function(){
+
+                    $('#ul_nav  a').removeClass('active');
+                    $(this).addClass('active');
+                    let current_page = $(this).attr('rel');
+                    let start_index = current_page * row_to_display;
+                    let index_of_end = start_index + row_to_display;
+                    $('#data_list tbody tr').css('opacity','0.0').hide().slice(start_index, index_of_end).
+                    css('display','table-row').animate({opacity:1}, 300);
+                });
+            $('select').selectpicker();
+        });
+    </script>
+{% endblock %}

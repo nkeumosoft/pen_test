@@ -1,0 +1,435 @@
+{% extends 'admin/master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+
+{#    <link rel="stylesheet"#}
+{#          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">#}
+{##}
+{#    <!-- jQuery -->#}
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>#}
+{#    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>#}
+    <style>
+
+        .fakeScreen {
+          background-color: #151515;
+          box-sizing: border-box;
+          width: 100%;
+          margin: 0 auto;
+          padding: 20px;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
+
+        p {
+          position: relative;
+          text-align: left;
+          font-size: 1.25em;
+          font-family: monospace;
+          white-space: normal;
+          overflow: hidden;
+          width: 0;
+        }
+
+
+
+        .line1 {
+          color: #9CD9F0;
+
+            width: 100%;
+        }
+
+        .cursor1 {
+          -webkit-animation: blink 1s 2s 2 forwards;
+          -moz-animation: blink 1s 2s 2 forwards;
+          -o-animation: blink 1s 2s 2 forwards;
+          animation: blink 1s 2s 2 forwards;
+        }
+
+        .line2 {
+          color: #CDEE69;
+          -webkit-animation: type .5s 4.25s steps(20, end) forwards;
+          -moz-animation: type .5s 4.25s steps(20, end) forwards;
+          -o-animation: type .5s 4.25s steps(20, end) forwards;
+          animation: type .5s 4.25s steps(20, end) forwards;
+        max-width: 100%;
+        width: 100%;
+        }
+
+        .cursor2 {
+          -webkit-animation: blink 1s 5.25s 2 forwards;
+          -moz-animation: blink 1s 5.25s 2 forwards;
+          -o-animation: blink 1s 5.25s 2 forwards;
+          animation: blink 1s 5.25s 2 forwards;
+        }
+
+
+
+        @-webkit-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-moz-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-o-keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @keyframes blink {
+          0% {
+            opacity: 0;
+          }
+          40% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @-webkit-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @-moz-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @-o-keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+
+        @keyframes type {
+          to {
+            width: 17em;
+          }
+        }
+    </style>
+{% endblock %}
+{% block body %}
+
+    <div class="container-fluid">
+              <br>
+    <p class="h1 text-center">Ncrack scan </p>
+    <br>
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-12">
+                     <div class="list-group">
+                        <form method="POST" action="{{ url_for( 'ncrackscanview.get_index') }}">
+
+                            <div class="mb-5 mx-5">
+                            <div class="list-group">
+                                <label for="cars">Find your Website:</label>
+
+                                <select id="cars" class="selectpicker" name="website_name" title="Choose Or Find Your Url..." data-live-search="true">
+                                    {% for website in websites %}
+                                        <option data-tokens="{{ website.id }}" value="{{ website.id }}">{{ website.url }}</option>
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            </div>
+                            <div class="d-grid gap-2 col-2 mx-auto">
+                                <button id="scrap_btn" type="submit" class="btn btn-outline-primary btn-lg">Scan </button>
+                                <button id="loading_btn" class="btn btn-primary" type="button" disabled style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Wait a moment please...
+                                </button>
+                            </div>
+                        </form>
+                     </div>
+                     <ul class="list-group">
+                        <li class="list-group-item">
+                            <label for="advance-scan">Advance</label>
+                            <input type="radio" id="advance-scan" onclick="toggle()" value="no" name="normalScan">
+                            <div id="myDIV" style="display: none">
+                                <div id="portscan-advance" class="list-group">
+                                        <div id="portscan-scanoptions" class="list-group">
+                                            <div class="list-group">
+                        <form method="POST" action="{{ url_for( 'ncrackscanview.get_index') }}">
+
+                            <div class="mb-5 mx-5">
+                            <div class="list-group">
+                                <label for="cars">Find your Website:</label>
+
+                                <select id="cars" class="selectpicker" name="website_name" title="Choose Or Find Your Url..." data-live-search="true">
+                                    {% for website in websites %}
+                                        <option data-tokens="{{ website.id }}" value="{{ website.id }}">{{ website.url }}</option>
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+                                <div class="list-group">
+                                    <input id="input1" class="list-group-item" type="text" name="username" class="form-control form-control-lg"
+                                       placeholder="username"
+                                       style="width: 50%; margin: 0 auto;" required>
+                                {% if message %}
+                                    <p class="text-center" style="color: red">
+                                        {{ message }}
+                                    </p>
+                                {% endif %}
+                                </div>
+                                <div class="list-group">
+                                        <input id="input1" class="list-group-item" type="text" name="password" class="form-control form-control-lg"
+                                           placeholder="password"
+                                           style="width: 50%; margin: 0 auto;" required>
+                                    {% if message %}
+                                        <p class="text-center" style="color: red">
+                                            {{ message }}
+                                        </p>
+                                    {% endif %}
+                                    </div>
+                            </div>
+                            <div class="d-grid gap-2 col-2 mx-auto">
+                                <button id="scrap_btn" type="submit" class="btn btn-outline-primary btn-lg">Scan </button>
+                                <button id="loading_btn" class="btn btn-primary" type="button" disabled style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Wait a moment please...
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                                            <div class="list-group">
+                                                    <form enctype="multipart/form-data" method="POST"  action="{{ url_for( 'ncrackscanview.up_load_file') }}">
+                                                        <div class="list-group">
+                                                                <label for="cars">Find your Website:</label>
+
+                                                                <select id="cars" class="selectpicker" name="website_name" title="Choose Or Find Your Url..." data-live-search="true">
+                                                                    {% for website in websites %}
+                                                                        <option data-tokens="{{ website.id }}" value="{{ website.id }}">{{ website.url }}</option>
+                                                                    {% endfor %}
+
+                                                                </select>
+
+                                                            </div>
+                                                            <br><br><br>
+                                                            <div class="position-absolute top-95 start-50 translate-middle">
+                                                                <p class="text-center h6 text-muted fw-light text-wrap" style="width: 30rem;">pass a file.</p>
+                                                            </div>
+                                                            <br><br>
+                                                            <div class="mb-5 mx-5">
+                                                                <input id="input2" type="file" accept=".txt" name="username_file" class="form-control form-control-lg"
+                                                                       style="width: 50%; margin: 0 auto;" required>
+                                                                {% if message_for_username_file %}
+                                                                    <p class="text-center" style="color: red">
+
+                                                                    </p>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="mb-5 mx-5">
+                                                                    <input id="input2" type="file" accept=".txt" name="password_file" class="form-control form-control-lg"
+                                                                           style="width: 50%; margin: 0 auto;">
+                                                                    {% if message_for_pass_file %}
+                                                                        <p class="text-center" style="color: red">
+
+                                                                        </p>
+                                                                    {% endif %}
+                                                                </div>
+                                                            <div class="d-grid gap-2 col-2 mx-auto">
+                                                                <button id="scrap_file_btn" type="submit" class="btn btn-outline-primary btn-lg">Scan Files</button>
+                                                                <button id="loading_file_btn" class="btn btn-primary" type="button" disabled style="display: none;">
+                                                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                                    Wait a moment please...
+                                                                </button>
+                                                            </div>
+                                                         </form>
+                                                </div>
+                                        </div>
+                                </div>
+
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+{#                        <div class="col-6 col-md-6 col-lg-6">#}
+{#                            <ul class="list-group">#}
+{#                                <li class="list-group-item">#}
+{#                                    <label for="normal">Normal</label>#}
+{#                                    <input type="radio" id="normal" onclick="toggle_hide()" value="yes" name="normalScan" checked="">#}
+{#                                </li>#}
+{#                                <li class="list-group-item">#}
+{#                                    <label for="advance-scan">Advance</label>#}
+{#                                    <input type="radio" id="advance-scan" onclick="toggle()" value="no" name="normalScan">#}
+{#                                    <div id="myDIV" style="display: none">#}
+{#                                        <div id="portscan-advance" class="list-group">#}
+{##}
+{#                                            <ul class="list-group">#}
+{#                                                {% for options in advance_options  %}#}
+{#                                                    <div id="portscan-generaloptions" class="list-group">#}
+{#                                                        <div id="portscan-label">{{ options.pop("description") }}</div>#}
+{##}
+{#                                                        {% for parent_key, suboption in options.items() %}#}
+{#                                                            {% for key, value in suboption.items() %}#}
+{#                                                                <li class="list-group-item">#}
+{#                                                                   <input type="checkbox" name="{{ parent_key }}" id="{{ key }}" value="{{ key }}">#}
+{#                                                                    <label for="{{ key }}">{{ key }}</label>#}
+{#                                                                </li>#}
+{#                                                            {% endfor %}#}
+{#                                                        {% endfor %}#}
+{#                                                    </div>#}
+{#                                                {% endfor %}#}
+{##}
+{#                                            </ul>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </li>#}
+{#                            </ul>#}
+{#                        </div>#}
+            </div>
+
+        </div>
+
+    </div>
+    <br> <br>
+     <br>
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            {% if result_of_scan %}
+        <div class="result">
+            <div class="fakeScreen">
+
+                {%  for value in result_of_scan %}
+                    <p class="line1" style="width: 100%">{{ value }}<span class="cursor1">_</span></p>
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+
+
+
+        {% endif %}
+
+    {% if error_during_scan %}
+        <div class="result">
+            <div class="fakeScreen">
+
+                {%  for value in error_during_scan %}
+                    <p class="line2" style="width: 100%">{{ value }}<span class="cursor2">_</span></p>
+                {% endfor %}
+
+
+            </div>
+        </div>
+
+
+
+
+        {% endif %}
+        </div>
+    </div>
+    </div>
+    <!-- Latest compiled and minified JavaScript -->
+
+    <script >
+        const scrapBtn = document.querySelector('#scrap_btn');
+        const loadingBtn = document.querySelector('#loading_btn');
+
+        scrapBtn.addEventListener("click", function () {
+            if (document.querySelector("#input1").value !== "") {
+                loadingBtn.style.display = "block";
+                scrapBtn.style.display = "none";
+                scrapFileBtn.disabled = true;
+            }
+        });
+
+        const scrapFileBtn = document.querySelector('#scrap_file_btn');
+        const loadingFileBtn = document.querySelector('#loading_file_btn');
+
+        scrapFileBtn.addEventListener("click", function () {
+            if (document.querySelector("#input2").value !== "") {
+                loadingFileBtn.style.display = "block";
+                scrapFileBtn.style.display = "none";
+                scrapBtn.disabled = true;
+            }
+        });
+         function toggle() {
+          let x = document.getElementById("myDIV");
+
+          if (x.style.display === "none") {
+            x.style.display = "block";
+
+          }
+        }
+
+        function toggle_hide(){
+            let x = document.getElementById("myDIV");
+              if (x.style.display === "block") {
+                x.style.display = "none";
+              }
+        }
+
+
+    </script>
+{% endblock %}
